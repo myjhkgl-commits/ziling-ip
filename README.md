@@ -18,7 +18,8 @@ public/
   img/ethnics/ref/{1..56}.(jpg|webp) 各民族参考形象照片
   img/ethnics/poster/{1..56}.jpg    二期民族形象海报（8 号源图过小已移除，弹窗降级显示形象图）
   img/main/*                        主 IP 素材：三视图、主形象、场景、盲盒、周边、表情包
-  video/hero.mp4                    首页视频背景《籽灵·一颗籽的千年之约》
+  video/hero.mp4                    首页视频背景（H.264 High CRF26 / 无音轨 / faststart，裁掉了源片开头 0.25s 封面闪帧）
+  video/hero-poster.jpg             视频首帧海报，加载完成前占位
 src/
   data/ethnics.js   56 个民族数据（民族名、IP 名、slogan、地区、简介、设计说明）+ 资源路径 helper
   components/       Navbar / Hero / EthnicSection / EthnicModal / MainIP / Footer
@@ -56,4 +57,18 @@ scripts/
 
 - 民族 IP 名称为首个版本命名方案，可按品牌要求替换（`src/data/ethnics.js` 中 `ip` 字段）。
 - 弹窗内 8 号（布依族）海报源图仅 87x115，需替换高清图后移除 `POSTER_MISSING`。
-- 首页视频 45MB，上线前建议转码为 1080p H.264 + faststart，并提供 poster 首帧图。
+
+## 视频来源与再生成
+
+背景视频来自 `C:\Users\Administrator\Desktop\201008-VR图标\《籽灵视频》\《籽灵视频》.mp4`（剪映导出，1920x1080 / 30fps / H.264 Main + AAC，43.6MB，无 faststart）。
+本地转码命令（需 ffmpeg，可用 `npm i @ffmpeg-installer/ffmpeg` 取二进制，其包体走 npm 源不受 GitHub 网络影响）：
+
+```bash
+ffmpeg -i 原片.mp4 -ss 0.25 -c:v libx264 -profile:v high -level 4.1 \
+  -preset slow -crf 26 -pix_fmt yuv420p -an -movflags +faststart hero.mp4
+ffmpeg -i hero.mp4 -frames:v 1 -q:v 3 hero-poster.jpg
+```
+
+- `-ss 0.25`：源片开头有约 0.2s 的封面卡闪帧，循环播放时会突兀，裁掉。
+- `-an`：Hero 本来就静音自动播放，去掉音轨省约 0.9MB。
+- 成品 14.4MB，约为源片 1/3；源片保留在原目录未动。

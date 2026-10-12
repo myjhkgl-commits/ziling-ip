@@ -4,10 +4,12 @@
       <video
         className="hero__video"
         src="video/hero.mp4"
+        poster="video/hero-poster.jpg"
         autoPlay
         muted
         loop
         playsInline
+        preload="auto"
       />
       <div className="hero__veil" />
       <div className="hero__content container">
