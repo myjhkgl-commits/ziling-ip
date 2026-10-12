@@ -1,9 +1,12 @@
 ﻿import { useEffect, useState } from 'react'
 
+// 桌面用横版全尺寸；手机用中心裁切的竖版（5MB vs 14MB，且不用靠 cover 硬裁）
+const WIDE = { src: 'video/hero.mp4', poster: 'video/hero-poster.jpg' }
+const PORTRAIT = { src: 'video/hero-mobile.mp4', poster: 'video/hero-mobile-poster.jpg' }
+
 export default function Hero() {
-  // auto   = 桌面，直接缓冲整段
-  // metadata = 手机，按需缓冲（14MB 视频在移动网络上不该预拉全片）
-  // off    = 用户开了省流量 / 禁自动播放，退回首帧静图
+  const [asset, setAsset] = useState(WIDE)
+  // auto = 桌面直接缓冲；metadata = 手机按需缓冲；off = 开了省流量，退回首帧静图
   const [mode, setMode] = useState('auto')
 
   useEffect(() => {
@@ -12,8 +15,11 @@ export default function Hero() {
       setMode('off')
       return
     }
-    const mq = window.matchMedia('(max-width: 900px)')
-    const sync = () => setMode(mq.matches ? 'metadata' : 'auto')
+    const mq = window.matchMedia('(max-width: 900px) and (orientation: portrait)')
+    const sync = () => {
+      setAsset(mq.matches ? PORTRAIT : WIDE)
+      setMode(mq.matches ? 'metadata' : 'auto')
+    }
     sync()
     mq.addEventListener('change', sync)
     return () => mq.removeEventListener('change', sync)
@@ -22,12 +28,13 @@ export default function Hero() {
   return (
     <section className="hero" id="hero">
       {mode === 'off' ? (
-        <img className="hero__video" src="video/hero-poster.jpg" alt="" draggable="false" />
+        <img className="hero__video" src={asset.poster} alt="" draggable="false" />
       ) : (
         <video
+          key={asset.src}
           className="hero__video"
-          src="video/hero.mp4"
-          poster="video/hero-poster.jpg"
+          src={asset.src}
+          poster={asset.poster}
           autoPlay
           muted
           loop
