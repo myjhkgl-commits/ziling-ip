@@ -33,6 +33,25 @@ scripts/
 - `260814一期民族形象` 中 41-46 号原型图存在编号错位（41怒族 / 41乌孜别克族 / 42俄罗斯族 / 43鄂温克族 / 44德昂族 / 45保安族），已在处理脚本中重映射为 41-46；`35.png`=毛南族原型，`9朝鲜族.webp`、`56汉朝原型.webp` 为特例。
 - 原型图扩展名不统一，`src/data/ethnics.js` 内 `REF_JPG` 集合标明哪些是 `.jpg`。
 
+## 部署到 GitHub Pages
+
+仓库已内置 `.github/workflows/deploy.yml`：推送到 `main` 分支后自动构建并发布。
+
+1. 在 GitHub 上建一个空仓库（建议命名 `ziling-ip`），不要勾选 README。
+2. 把本仓库推上去：
+
+   ```bash
+   git remote add origin https://github.com/<你的用户名>/ziling-ip.git
+   git push -u origin main
+   ```
+
+3. 打开仓库 **Settings → Pages**，把 **Source** 改成 **GitHub Actions**（只需设置一次）。
+4. 等 Actions 跑完，访问 `https://<你的用户名>.github.io/ziling-ip/`。
+
+`vite.config.js` 里 `base: './'` 已设为相对路径，所以站点放在任意子目录（如 `/ziling-ip/`）都能正常加载资源，无需改配置。
+
+> 本机若用受管 Node 跑 `npm run build`，若 `dist/` 已存在可能被批量删除守卫拦截。先手动清掉 `dist/` 再构建即可；GitHub Actions 上不存在这个问题。
+
 ## 后续优化待办
 
 - 民族 IP 名称为首个版本命名方案，可按品牌要求替换（`src/data/ethnics.js` 中 `ip` 字段）。
