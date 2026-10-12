@@ -1,16 +1,40 @@
-﻿export default function Hero() {
+﻿import { useEffect, useState } from 'react'
+
+export default function Hero() {
+  // auto   = 桌面，直接缓冲整段
+  // metadata = 手机，按需缓冲（14MB 视频在移动网络上不该预拉全片）
+  // off    = 用户开了省流量 / 禁自动播放，退回首帧静图
+  const [mode, setMode] = useState('auto')
+
+  useEffect(() => {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+    if (conn && conn.saveData) {
+      setMode('off')
+      return
+    }
+    const mq = window.matchMedia('(max-width: 900px)')
+    const sync = () => setMode(mq.matches ? 'metadata' : 'auto')
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
   return (
     <section className="hero" id="hero">
-      <video
-        className="hero__video"
-        src="video/hero.mp4"
-        poster="video/hero-poster.jpg"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-      />
+      {mode === 'off' ? (
+        <img className="hero__video" src="video/hero-poster.jpg" alt="" draggable="false" />
+      ) : (
+        <video
+          className="hero__video"
+          src="video/hero.mp4"
+          poster="video/hero-poster.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload={mode}
+        />
+      )}
       <div className="hero__veil" />
       <div className="hero__content container">
         <p className="hero__eyebrow">中华民族共同体 IP</p>

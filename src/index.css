@@ -26,10 +26,17 @@ body {
   font-family: var(--sans);
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 img { user-select: none; }
+
+button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+a { touch-action: manipulation; }
 
 ::selection { background: rgba(200, 68, 58, 0.55); color: #fff; }
 
@@ -41,7 +48,7 @@ img { user-select: none; }
 .container {
   max-width: var(--container);
   margin: 0 auto;
-  padding-inline: 56px;
+  padding-inline: clamp(20px, 3.4vw, 56px);
 }
 
 /* ---------- 按钮 ---------- */
@@ -149,11 +156,75 @@ img { user-select: none; }
 .nav__links a:hover::after { transform: scaleX(1); }
 .nav__cta { padding: 11px 28px; font-size: 14px; }
 
+/* 汉堡按钮（桌面隐藏） */
+.nav__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0 11px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: border-color 0.3s;
+}
+.nav__burger span {
+  display: block;
+  height: 1.5px;
+  width: 100%;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.35s ease, opacity 0.25s ease;
+}
+.nav--open .nav__burger { border-color: rgba(200, 68, 58, 0.6); }
+.nav--open .nav__burger span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav--open .nav__burger span:nth-child(2) { opacity: 0; }
+.nav--open .nav__burger span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* 移动端抽屉 */
+.nav__drawer {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 49;
+  flex-direction: column;
+  padding: 14px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  background: rgba(12, 10, 8, 0.97);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--line);
+  transform: translateY(-14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+}
+.nav__drawer.is-open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.nav__drawer-link {
+  display: block;
+  padding: 16px 2px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--serif);
+  font-size: 19px;
+  letter-spacing: 0.16em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+.nav__drawer-link:active { color: var(--red-bright); }
+.nav__drawer .btn { margin-top: 20px; justify-content: center; }
+
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
   height: 100vh;
+  height: 100svh;
   min-height: 760px;
+  min-height: min(760px, 100svh);
   overflow: hidden;
 }
 .hero__video {
@@ -251,13 +322,13 @@ img { user-select: none; }
 }
 
 /* ---------- 通用 Section ---------- */
-.section { padding: 150px 0; }
+.section { padding: clamp(84px, 8.6vw, 150px) 0; }
 .section__head {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 44px;
+  gap: clamp(24px, 3vw, 44px);
   align-items: start;
-  margin-bottom: 90px;
+  margin-bottom: clamp(46px, 6vw, 90px);
 }
 .section__index {
   font-family: var(--serif);
@@ -274,7 +345,7 @@ img { user-select: none; }
 }
 .section__title {
   font-family: var(--serif);
-  font-size: 58px;
+  font-size: clamp(30px, 3.4vw, 58px);
   font-weight: 600;
   letter-spacing: 0.06em;
 }
@@ -438,6 +509,19 @@ img { user-select: none; }
   border-color: var(--red);
   color: var(--red-bright);
   transform: rotate(90deg);
+}
+/* 底部抽屉拖拽手柄（仅移动端显示） */
+.modal__grab {
+  display: none;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 6;
+  width: 44px;
+  height: 4px;
+  margin-left: -22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
 }
 .modal__left {
   position: relative;
@@ -689,3 +773,202 @@ img { user-select: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ============================================================
+   响应式 —— 从桌面 1700 版心一路适配到 360px 手机
+   ============================================================ */
+
+/* ---------- ≤1440：小笔记本 ---------- */
+@media (max-width: 1440px) {
+  .ethnics__grid { gap: 22px; }
+  .hero__title-cn { font-size: clamp(96px, 10vw, 150px); }
+}
+
+/* ---------- ≤1180：平板横屏 ---------- */
+@media (max-width: 1180px) {
+  .nav__links { gap: 30px; }
+  .ethnics__grid { grid-template-columns: repeat(5, 1fr); }
+  .mainip__grid { grid-template-columns: repeat(2, 1fr); }
+  .modal__panel { grid-template-columns: 360px 1fr; }
+  .modal__right { padding: 46px 42px 38px; }
+  .modal__gallery img { height: 230px; }
+  .hero__title-cn { font-size: clamp(88px, 10.5vw, 134px); }
+}
+
+/* ---------- ≤980：平板竖屏 ---------- */
+@media (max-width: 980px) {
+  .ethnics__grid { grid-template-columns: repeat(4, 1fr); }
+  .section__title { font-size: clamp(32px, 5vw, 46px); }
+  .hero__title-cn { font-size: clamp(80px, 11.5vw, 118px); }
+  .modal__panel { grid-template-columns: 320px 1fr; }
+  .modal__right { padding: 40px 34px 34px; }
+}
+
+/* ---------- ≤900：进入移动布局（导航折叠 / 弹窗转底部抽屉） ---------- */
+@media (max-width: 900px) {
+  .container { padding-inline: 20px; }
+
+  /* --- 导航 --- */
+  .nav__links,
+  .nav__cta { display: none; }
+  .nav__burger { display: flex; }
+  .nav__drawer { display: flex; }
+  .nav__inner { height: 64px; gap: 16px; }
+  .nav--open { background: rgba(14, 12, 10, 0.92); }
+  .nav--open { border-bottom-color: transparent; }
+  .nav__brand-cn { font-size: 21px; letter-spacing: 0.18em; }
+  .nav__brand-en { font-size: 10px; letter-spacing: 0.32em; }
+
+  /* --- Hero --- */
+  .hero { min-height: 0; }
+  .hero__video { object-position: center 44%; }
+  .hero__veil {
+    background:
+      radial-gradient(120% 70% at 50% 18%, transparent 30%, rgba(10, 8, 6, 0.6) 100%),
+      linear-gradient(180deg, rgba(10, 8, 6, 0.72) 0%, rgba(10, 8, 6, 0.28) 34%, rgba(12, 10, 8, 0.97) 96%);
+  }
+  .hero__content { justify-content: flex-end; padding-bottom: calc(9svh + env(safe-area-inset-bottom, 0px)); }
+  .hero__eyebrow { font-size: 11.5px; letter-spacing: 0.36em; margin-bottom: 16px; }
+  .hero__eyebrow::before { width: 22px; margin-right: 10px; }
+  .hero__title { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .hero__title-cn { font-size: clamp(64px, 21vw, 104px); letter-spacing: 0.06em; }
+  .hero__title-en { font-size: 10.5px; letter-spacing: 0.5em; padding-bottom: 0; }
+  .hero__tagline { font-size: clamp(16px, 4.4vw, 21px); letter-spacing: 0.22em; margin-top: 16px; }
+  .hero__desc { font-size: 13.5px; line-height: 1.95; margin-top: 14px; }
+  .hero__actions { flex-direction: column; align-items: stretch; gap: 11px; margin-top: 26px; }
+  .hero__actions .btn { width: 100%; justify-content: center; padding: 15px 22px; font-size: 14px; }
+  .hero__scroll { display: none; }
+
+  /* --- Section 通用 --- */
+  .section__head { grid-template-columns: 1fr; gap: 20px; }
+  .section__index { width: 44px; height: 44px; font-size: 14px; }
+  .section__sub { font-size: 14px; line-height: 1.95; margin-top: 14px; }
+
+  /* --- 56 民族网格 --- */
+  .ethnics__grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .ecard { border-radius: 14px; }
+  .ecard__num { top: 12px; left: 13px; font-size: 12px; }
+  .ecard__stage img { width: 84%; height: 82%; }
+  .ecard__meta { padding: 30px 13px 13px; }
+  .ecard__ip { font-size: 18px; letter-spacing: 0.06em; }
+  .ecard__name { font-size: 10.5px; letter-spacing: 0.22em; margin-top: 4px; }
+  .ecard__tag { display: none; }
+  .ecard:active { transform: scale(0.975); }
+
+  /* --- 弹窗 → 底部抽屉 --- */
+  .modal { padding: 0; align-items: flex-end; }
+  .modal__panel {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: 100%;
+    max-height: 92svh;
+    border-radius: 22px 22px 0 0;
+    animation: sheetUp 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes sheetUp { from { opacity: 0; transform: translateY(60px); } }
+  .modal__grab { display: block; }
+  .modal__left {
+    height: 34svh;
+    min-height: 200px;
+    padding: 20px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal__num { font-size: 56px; bottom: 2px; left: 16px; }
+  .modal__right { padding: 22px 20px 30px; min-height: 0; }
+  .modal__region { font-size: 11.5px; letter-spacing: 0.28em; }
+  .modal__name { font-size: 29px; margin-top: 10px; line-height: 1.25; }
+  .modal__ipname { display: block; font-size: 18px; margin: 8px 0 0; letter-spacing: 0.14em; }
+  .modal__tag { font-size: 14px; margin-top: 12px; line-height: 1.7; }
+  .modal__block { margin-top: 24px; }
+  .modal__block h4 { font-size: 12px; letter-spacing: 0.26em; margin-bottom: 10px; }
+  .modal__block p { font-size: 14.5px; line-height: 1.9; }
+  .modal__gallery { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 26px; }
+  .modal__gallery img { height: 146px; }
+  .modal__gallery figcaption { padding: 9px 10px; font-size: 10.5px; letter-spacing: 0.14em; }
+  .modal__close {
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+    background: rgba(14, 12, 10, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* --- 主 IP --- */
+  .mainip__quote { padding-left: 20px; margin-bottom: 42px; border-left-width: 2px; }
+  .mainip__quote p { font-size: 17.5px; line-height: 1.95; }
+  .mainip__quote footer { font-size: 12px; letter-spacing: 0.28em; margin-top: 14px; }
+  .mainip__grid { grid-template-columns: 1fr; gap: 16px; }
+  .mcard { border-radius: 16px; }
+  .mcard--tall { grid-column: span 1; min-height: 320px; aspect-ratio: 4 / 3; }
+  .mcard--fit img { padding: 20px 24px 86px; }
+  .mcard figcaption { padding: 44px 18px 16px; }
+  .mcard strong { font-size: 18px; }
+  .mcard span { font-size: 12.5px; line-height: 1.7; margin-top: 5px; }
+
+  /* --- 页脚 --- */
+  .footer { padding-top: 66px; }
+  .footer__inner { flex-direction: column; align-items: flex-start; gap: 32px; }
+  .footer__brand h2 { font-size: 33px; }
+  .footer__brand h2 span { display: block; margin: 8px 0 0; font-size: 11px; letter-spacing: 0.38em; }
+  .footer__brand p { font-size: 13.5px; line-height: 1.8; margin-top: 14px; }
+  .footer__contact { text-align: left; width: 100%; }
+  .footer__label { font-size: 12.5px; line-height: 1.8; margin-bottom: 16px; }
+  .footer__contact .btn { width: 100%; justify-content: center; }
+  .footer__mail { margin-top: 12px; }
+  .footer__bottom {
+    margin-top: 42px;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 11.5px;
+    padding: 20px 0 calc(26px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ---------- ≤600：主流手机 ---------- */
+@media (max-width: 600px) {
+  .ethnics__grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .ecard { border-radius: 13px; }
+  .ecard__ip { font-size: 17px; }
+  .ecard__stage img { width: 88%; height: 80%; }
+  .hero__title-cn { font-size: clamp(60px, 22vw, 92px); }
+  .modal__left { height: 32svh; min-height: 186px; }
+  .modal__gallery img { height: 126px; }
+  .mcard--tall { min-height: 280px; }
+  .footer__brand p { font-size: 13px; }
+}
+
+/* ---------- ≤380：小屏手机 ---------- */
+@media (max-width: 380px) {
+  .container { padding-inline: 16px; }
+  .ethnics__grid { gap: 10px; }
+  .ecard__ip { font-size: 16px; }
+  .hero__title-cn { font-size: clamp(54px, 21vw, 78px); }
+  .hero__desc { font-size: 13px; }
+  .modal__gallery img { height: 108px; }
+}
+
+/* ---------- 触屏设备：去掉悬浮态副作用 ---------- */
+@media (hover: none) {
+  .btn:hover { transform: none; box-shadow: none; }
+  .ecard:hover { transform: none; box-shadow: none; border-color: var(--line); }
+  .ecard:hover::after { opacity: 0; }
+  .ecard:hover .ecard__stage img { transform: translateY(8px) scale(0.97); }
+  .ecard:active { border-color: rgba(200, 68, 58, 0.5); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
+  .mcard:hover img { transform: none; }
+  .nav__links a:hover::after { transform: scaleX(0); }
+}
+
+/* ---------- 手机横屏 / 矮屏：压缩 Hero 文案，避免溢出 ---------- */
+@media (max-height: 560px) and (orientation: landscape) {
+  .hero__content { padding-bottom: 5svh; }
+  .hero__desc { display: none; }
+  .hero__title-cn { font-size: clamp(52px, 13vw, 84px); }
+  .hero__actions { flex-direction: row; margin-top: 18px; }
+  .hero__actions .btn { width: auto; flex: 1; }
+  .modal__left { height: 46svh; min-height: 150px; }
+}
+

@@ -13,6 +13,7 @@ export default function EthnicModal({ item, posterMissing, onClose }) {
   return (
     <div className="modal" role="dialog" aria-modal="true" onClick={onClose}>
       <div className="modal__panel" onClick={(e) => e.stopPropagation()}>
+        <span className="modal__grab" aria-hidden="true" />
         <button className="modal__close" onClick={onClose} aria-label="关闭">×</button>
 
         <div className="modal__left">
