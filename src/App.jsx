@@ -26,8 +26,8 @@ export default function App() {
     <div className="site">
       <Navbar />
       <Hero />
-      <EthnicSection />
       <MainIP />
+      <EthnicSection />
       <Footer />
     </div>
   )

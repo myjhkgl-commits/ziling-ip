@@ -8,8 +8,8 @@ export default function Footer() {
         </div>
         <div className="footer__contact">
           <p className="footer__label">IP 授权 · 联合开发 · 文创合作</p>
-          <a className="btn btn--solid" href="mailto:hello@ziling.example">联系我们</a>
-          <p className="footer__mail">hello@ziling.example</p>
+          <a className="btn btn--solid" href="mailto:myjhkgl@163.com">联系我们</a>
+          <p className="footer__mail">myjhkgl@163.com</p>
         </div>
       </div>
       <div className="container footer__bottom">

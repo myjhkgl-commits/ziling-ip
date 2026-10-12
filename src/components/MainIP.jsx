@@ -39,7 +39,7 @@ export default function MainIP() {
     <section className="section mainip" id="ziling">
       <div className="container">
         <header className="section__head reveal">
-          <span className="section__index">02</span>
+          <span className="section__index">01</span>
           <div>
             <h2 className="section__title">主 IP · 籽灵</h2>
             <p className="section__sub">
@@ -51,7 +51,7 @@ export default function MainIP() {
 
         <div className="mainip__quote reveal">
           <p>
-            她一声呼唤，55 个身着各民族华服的籽灵伙伴破土而出，手拉手、肩并肩，
+            她一声呼唤，56 个身着各民族华服的籽灵伙伴破土而出，手拉手、肩并肩，
             围成紧实的圆——光芒交汇处，一颗饱满的石榴缓缓凝成。
           </p>
           <footer>籽籽同心，多元一体</footer>

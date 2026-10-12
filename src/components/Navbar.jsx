@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 
 const LINKS = [
   { href: '#hero', label: '首页' },
-  { href: '#ethnics', label: '五十六粒籽' },
   { href: '#ziling', label: '主 IP · 籽灵' },
+  { href: '#ethnics', label: '五十六粒籽' },
   { href: '#contact', label: '联系我们' },
 ]
 

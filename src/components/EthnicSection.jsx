@@ -28,11 +28,11 @@ export default function EthnicSection() {
     <section className="section ethnics" id="ethnics">
       <div className="container">
         <header className="section__head reveal">
-          <span className="section__index">01</span>
+          <span className="section__index">02</span>
           <div>
-            <h2 className="section__title">五十六粒籽 · 一样好颜色</h2>
+            <h2 className="section__title">五十六粒籽 · 同心一颗榴</h2>
             <p className="section__sub">
-              籽灵一声呼唤，55 位身着各民族华服的伙伴破土而出。
+              籽灵一声呼唤，56 位身着各民族华服的伙伴破土而出。
               每一粒籽都有自己的名字——点击卡片，认识它们。
             </p>
           </div>
