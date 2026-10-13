@@ -396,14 +396,13 @@ export const ethnics = [
   },
 ]
 
-// 原型参考图扩展名映射（jpg=照片源，webp=转换源）
-const REF_JPG = new Set([1, 2, 3, 7, 10, 12, 13, 14, 16, 22, 24, 25, 26, 27, 28, 29, 30, 32, 37, 38, 40, 42, 43, 45, 46, 50, 51, 52, 54])
 // 8 号海报源文件过小，弹窗内以形象大图代替
 export const POSTER_MISSING = new Set([8])
 
+// 统一 webp：体积约为 jpg 的 2/3，弹窗和放大查看都更快
 export const assetOf = (n, kind) => {
   if (kind === 'avatar') return `img/ethnics/avatar/${n}.webp`
-  if (kind === 'poster') return `img/ethnics/poster/${n}.jpg`
-  if (kind === 'ref') return `img/ethnics/ref/${n}.${REF_JPG.has(n) ? 'jpg' : 'webp'}`
+  if (kind === 'poster') return `img/ethnics/poster/${n}.webp`
+  if (kind === 'ref') return `img/ethnics/ref/${n}.webp`
   return null
 }

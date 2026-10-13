@@ -1,4 +1,6 @@
-﻿const CARDS = [
+﻿import { useLightbox } from './Lightbox'
+
+const CARDS = [
   {
     src: 'img/main/sanshi.webp',
     title: '三视图设定',
@@ -34,7 +36,12 @@
   },
 ]
 
+// 供放大查看的图集（顺序与卡片一致）
+const SHOTS = CARDS.map((c) => ({ src: c.src, alt: c.title, caption: c.title }))
+
 export default function MainIP() {
+  const { openAt } = useLightbox()
+
   return (
     <section className="section mainip" id="ziling">
       <div className="container">
@@ -57,10 +64,49 @@ export default function MainIP() {
           <footer>籽籽同心，多元一体</footer>
         </div>
 
+        <p className="section__hint">
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path
+              d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
+          点击任意图片可放大查看
+        </p>
+
         <div className="mainip__grid">
-          {CARDS.map((c) => (
-            <figure key={c.src} className={`mcard reveal ${c.tall ? 'mcard--tall' : ''} ${c.fit ? 'mcard--fit' : ''}`}>
-              <img src={c.src} alt={c.title} loading="lazy" draggable="false" />
+          {CARDS.map((c, i) => (
+            <figure
+              key={c.src}
+              className={`mcard reveal ${c.tall ? 'mcard--tall' : ''} ${c.fit ? 'mcard--fit' : ''} mcard--zoom`}
+              role="button"
+              tabIndex={0}
+              aria-label={`放大查看：${c.title}`}
+              onClick={() => openAt(SHOTS, i)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  openAt(SHOTS, i)
+                }
+              }}
+            >
+              <img src={c.src} alt={c.title} loading="lazy" decoding="async" draggable="false" />
+              <span className="zoom-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="15" height="15">
+                  <path
+                    d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+                    stroke="currentColor"
+                    strokeWidth="1.9"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                </svg>
+              </span>
               <figcaption>
                 <strong>{c.title}</strong>
                 <span>{c.desc}</span>

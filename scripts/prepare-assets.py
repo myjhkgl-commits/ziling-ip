@@ -75,12 +75,11 @@ for n in range(1, 57):
             continue
         src_name = cands[0]
     ext = os.path.splitext(src_name)[1].lower()
-    to_jpg = ext in (".jpg", ".jpeg")
     convert(os.path.join(ref_src, src_name),
-            os.path.join(ref_out, f"{n}.jpg" if to_jpg else f"{n}.webp"),
-            max_side=1000, quality=82, to_jpg=to_jpg)
+            os.path.join(ref_out, f"{n}.webp"),
+            max_side=1000, quality=80, to_jpg=False)
 
-# ---------- 3. 民族海报（压缩为 jpg） ----------
+# ---------- 3. 民族海报（压缩为 webp：比 jpg 小约 1/3，弹窗/放大查看更快） ----------
 po_src = os.path.join(BASE, "260921-二期民族海报")
 po_out = ensure(os.path.join(SITE, "img", "ethnics", "poster"))
 po_found = {}
@@ -89,10 +88,8 @@ for f in os.listdir(po_src):
     if n is not None and n not in po_found:
         po_found[n] = f
 for n in sorted(po_found):
-    ext = os.path.splitext(po_found[n])[1].lower()
-    to_jpg = ext in (".jpg", ".jpeg")
-    convert(os.path.join(po_src, po_found[n]), os.path.join(po_out, f"{n}.jpg"),
-            max_side=1500, quality=82, to_jpg=True)
+    convert(os.path.join(po_src, po_found[n]), os.path.join(po_out, f"{n}.webp"),
+            max_side=1400, quality=82, to_jpg=False)
 
 # ---------- 4. 主 IP 素材 ----------
 main_out = ensure(os.path.join(SITE, "img", "main"))
@@ -111,9 +108,15 @@ for src, dst, ms, q, alpha, jpg in main_assets:
     convert(src, os.path.join(main_out, dst), max_side=ms, quality=q, keep_alpha=alpha, to_jpg=jpg)
 
 # ---------- 5. 视频 ----------
+# 注意：这里【不再】直接把原始视频拷进 public/video。
+# 原始片（1080p / 43MB / 无 faststart）必须先用 ffmpeg 转码，产出三档：
+#   public/video/hero.mp4            1920x1080  桌面大屏
+#   public/video/hero-720.mp4        1280x720   平板 / 小笔记本 / 手机横屏
+#   public/video/hero-mobile.mp4     720x1280   手机竖屏
+# 以及对应首帧海报 hero-poster.jpg / hero-720-poster.jpg / hero-mobile-poster.jpg
+# 转码参数见 README「视频来源与再生成」。
 vid_out = ensure(os.path.join(SITE, "video"))
-shutil.copy2(os.path.join(BASE, "《籽灵·一颗籽的千年之约》.mp4"), os.path.join(vid_out, "hero.mp4"))
-report.append("video copied: video/hero.mp4")
+report.append("video: 跳过（由 ffmpeg 单独转码，见 README）")
 
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets-report.txt"), "w", encoding="utf-8") as fp:
     fp.write("\n".join(report))

@@ -52,6 +52,7 @@ export default function EthnicSection() {
                   src={assetOf(e.n, 'avatar')}
                   alt={`${e.name}籽灵形象`}
                   loading="lazy"
+                  decoding="async"
                   draggable="false"
                 />
               </div>

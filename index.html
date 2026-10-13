@@ -10,6 +10,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>籽灵 ZI LING · 一颗籽的千年之约</title>
     <meta name="description" content="籽灵——诞生于枣庄石榴文化沃土上的中华民族共同体IP。56 个民族籽灵伙伴，籽籽同心，多元一体。" />
+
+    <!-- 首屏背景：按屏幕预先拉取对应首帧图，让第一屏立刻有画面（视频随后在后台缓冲） -->
+    <link rel="preload" as="image" href="./video/hero-mobile-poster.jpg" media="(max-width: 900px) and (orientation: portrait)" fetchpriority="high" />
+    <link rel="preload" as="image" href="./video/hero-720-poster.jpg" media="(max-width: 1024px) and (orientation: landscape), (min-width: 901px) and (max-width: 1024px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="./video/hero-poster.jpg" media="(min-width: 1025px)" fetchpriority="high" />
   </head>
   <body>
     <div id="root"></div>

@@ -234,6 +234,15 @@ a { touch-action: manipulation; }
   height: 100%;
   object-fit: cover;
 }
+/* 首帧静图：先渲染，保证首屏立刻有画面 */
+.hero__poster { z-index: 0; }
+/* 视频：后台缓冲好开始播放后再淡入，避免黑屏/卡顿感 */
+.hero__video--live {
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.hero__video--live.is-playing { opacity: 1; }
 .hero__veil {
   position: absolute;
   inset: 0;
@@ -970,5 +979,211 @@ a { touch-action: manipulation; }
   .hero__actions { flex-direction: row; margin-top: 18px; }
   .hero__actions .btn { width: auto; flex: 1; }
   .modal__left { height: 46svh; min-height: 150px; }
+}
+
+/* ---------- 图片可点击的提示行 ---------- */
+.section__hint {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 12.5px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+.section__hint svg { flex: none; opacity: 0.75; }
+@media (max-width: 900px) {
+  .section__hint { justify-content: flex-start; margin-bottom: 16px; font-size: 11.5px; }
+}
+
+/* ============================================================
+   图片放大查看（Lightbox）
+   ============================================================ */
+
+/* 可点击放大的图片/容器 */
+.zoomable { cursor: zoom-in; }
+.mcard--zoom { cursor: zoom-in; }
+.mcard--zoom:focus-visible { outline: 2px solid var(--red-bright); outline-offset: 3px; }
+
+/* 放大角标 */
+.zoom-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(10, 8, 6, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #efe7dc;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+.mcard--zoom:hover .zoom-badge,
+.mcard--zoom:focus-visible .zoom-badge { opacity: 1; transform: none; }
+
+/* 弹窗内小图的角标（纯 CSS，省一个节点） */
+.modal__gallery figure.zoomable { position: relative; }
+.modal__gallery figure.zoomable::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(10, 8, 6, 0.5)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23efe7dc' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5'/%3E%3C/svg%3E")
+    center / 13px 13px no-repeat;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.modal__gallery figure.zoomable:hover::after { opacity: 1; }
+
+/* 触屏设备：没有 hover，常驻显示放大角标，让用户知道能点 */
+@media (hover: none) {
+  .zoom-badge { opacity: 0.82; transform: none; background: rgba(10, 8, 6, 0.4); }
+  .modal__gallery figure.zoomable::after { opacity: 0.8; }
+  .mcard--zoom:hover img { transform: none; }
+}
+
+/* ---------- Lightbox 主体 ---------- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  background: rgba(6, 5, 4, 0.95);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  animation: lbFade 0.26s ease;
+  overscroll-behavior: contain;
+}
+@keyframes lbFade { from { opacity: 0; } }
+
+.lightbox__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 clamp(14px, 3vw, 26px);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.lightbox__count {
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.lightbox__btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.lightbox__btn:hover { background: rgba(255, 255, 255, 0.13); border-color: rgba(255, 255, 255, 0.32); }
+
+.lightbox__stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(6px, 1.6vw, 20px) clamp(14px, 5vw, 78px);
+  overflow: hidden;
+}
+.lightbox__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  cursor: zoom-in;
+  user-select: none;
+  -webkit-user-drag: none;
+  opacity: 0;
+  transition: opacity 0.32s ease;
+  will-change: transform;
+}
+.lightbox__img.is-loaded { opacity: 1; }
+.lightbox__img.is-zoomed { cursor: grab; transition: none; }
+.lightbox__img.is-zoomed:active { cursor: grabbing; }
+
+.lightbox__spinner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--red-bright);
+  animation: lbSpin 0.85s linear infinite;
+}
+@keyframes lbSpin { to { transform: rotate(360deg); } }
+
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 17, 14, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.lightbox__nav:hover { background: rgba(200, 68, 58, 0.88); border-color: transparent; }
+.lightbox__nav--prev { left: clamp(8px, 2vw, 22px); }
+.lightbox__nav--next { right: clamp(8px, 2vw, 22px); }
+
+.lightbox__foot {
+  flex: none;
+  padding: 6px clamp(16px, 4vw, 30px) calc(18px + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+.lightbox__caption {
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: #ded4c6;
+}
+.lightbox__hint {
+  margin-top: 6px;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  color: rgba(154, 145, 134, 0.72);
+}
+
+@media (max-width: 900px) {
+  .lightbox__bar { height: 50px; }
+  .lightbox__nav { width: 40px; height: 40px; }
+  .lightbox__caption { font-size: 14px; }
+  .lightbox__hint { font-size: 11px; }
+  .zoom-badge { width: 26px; height: 26px; }
 }
 

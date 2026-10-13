@@ -1,47 +1,95 @@
 ﻿import { useEffect, useState } from 'react'
 
-// 桌面用横版全尺寸；手机用中心裁切的竖版（5MB vs 14MB，且不用靠 cover 硬裁）
+// 三档片源，按屏幕选最省的那一个：
+//   ≥1025px        1920×1080  （桌面宽屏）
+//   ≤1024px        1280×720   （平板 / 小笔记本 / 手机横屏）
+//   ≤900px 且竖屏  720×1280   （手机竖屏，5MB → 3.3MB）
 const WIDE = { src: 'video/hero.mp4', poster: 'video/hero-poster.jpg' }
+const MID = { src: 'video/hero-720.mp4', poster: 'video/hero-720-poster.jpg' }
 const PORTRAIT = { src: 'video/hero-mobile.mp4', poster: 'video/hero-mobile-poster.jpg' }
 
-export default function Hero() {
-  const [asset, setAsset] = useState(WIDE)
-  // auto = 桌面直接缓冲；metadata = 手机按需缓冲；off = 开了省流量，退回首帧静图
-  const [mode, setMode] = useState('auto')
+const MQ_PORTRAIT = '(max-width: 900px) and (orientation: portrait)'
+const MQ_MID = '(max-width: 1024px)'
 
+function pickAsset() {
+  if (typeof window === 'undefined') return WIDE
+  if (window.matchMedia(MQ_PORTRAIT).matches) return PORTRAIT
+  if (window.matchMedia(MQ_MID).matches) return MID
+  return WIDE
+}
+
+// 弱网 / 省流量模式：直接用首帧静图，不拉视频
+function isSlowNetwork() {
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+  if (!conn) return false
+  if (conn.saveData) return true
+  return /(^|-)2g$/.test(conn.effectiveType || '')
+}
+
+export default function Hero() {
+  const [asset, setAsset] = useState(pickAsset)
+  const [withVideo, setWithVideo] = useState(false) // 弱网下始终为 false
+  const [playing, setPlaying] = useState(false)
+
+  // 屏幕方向 / 宽度变化时换片源
   useEffect(() => {
-    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection
-    if (conn && conn.saveData) {
-      setMode('off')
-      return
+    const mqs = [MQ_PORTRAIT, MQ_MID].map((q) => window.matchMedia(q))
+    const sync = () => setAsset(pickAsset())
+    mqs.forEach((m) => m.addEventListener('change', sync))
+    return () => mqs.forEach((m) => m.removeEventListener('change', sync))
+  }, [])
+
+  // 关键：先渲染首帧静态图（100 多 KB，立刻可见），
+  // 等页面 load 完 + 空闲时段再挂 <video>，视频在后面慢慢缓冲。
+  // 这样首屏绘制完全不被 3~5MB 的视频拖住。
+  useEffect(() => {
+    if (isSlowNetwork()) return
+    let idleId = null
+    let timer = null
+
+    const attach = () => setWithVideo(true)
+    const schedule = () => {
+      if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(attach, { timeout: 2200 })
+      else timer = setTimeout(attach, 400)
     }
-    const mq = window.matchMedia('(max-width: 900px) and (orientation: portrait)')
-    const sync = () => {
-      setAsset(mq.matches ? PORTRAIT : WIDE)
-      setMode(mq.matches ? 'metadata' : 'auto')
+
+    if (document.readyState === 'complete') schedule()
+    else window.addEventListener('load', schedule, { once: true })
+
+    return () => {
+      window.removeEventListener('load', schedule)
+      if (idleId !== null && 'cancelIdleCallback' in window) window.cancelIdleCallback(idleId)
+      if (timer) clearTimeout(timer)
     }
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
   }, [])
 
   return (
     <section className="hero" id="hero">
-      {mode === 'off' ? (
-        <img className="hero__video" src={asset.poster} alt="" draggable="false" />
-      ) : (
+      {/* 首帧：始终渲染，充当视频未就绪时的背景 */}
+      <img
+        className="hero__video hero__poster"
+        src={asset.poster}
+        alt=""
+        draggable="false"
+        fetchpriority="high"
+        decoding="async"
+      />
+
+      {withVideo && (
         <video
           key={asset.src}
-          className="hero__video"
+          className={`hero__video hero__video--live ${playing ? 'is-playing' : ''}`}
           src={asset.src}
           poster={asset.poster}
           autoPlay
           muted
           loop
           playsInline
-          preload={mode}
+          preload="auto"
+          onPlaying={() => setPlaying(true)}
         />
       )}
+
       <div className="hero__veil" />
       <div className="hero__content container">
         <p className="hero__eyebrow">中华民族共同体 IP</p>
