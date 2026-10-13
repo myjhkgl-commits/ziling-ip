@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="枣庄石榴文化信息库：历史篇、文化篇、产业篇、价值篇，每条数据均可溯源。">
+<title>冠世榴韵 · 枣庄石榴文化信息库</title>
+<link rel="stylesheet" href="./assets/css/main.css">
+</head>
+<body data-root="" data-page="home">
+
+<a class="skip" href="#main">跳到正文</a>
+<div data-nav></div>
+
+<main id="main">
+
+  <header class="hero">
+    <div class="wrap">
+      <span class="kicker">枣庄石榴文化 · 信息可视化</span>
+      <h1>冠世榴<em>韵</em></h1>
+      <p class="en">Zaozhuang pomegranate culture · information library</p>
+      <p class="lede">
+        一个有两千余年种植史的物种，长在一座城上。这里不是它的宣传页，是它的资料室——
+        史料、民俗、产值、药用，分四篇归档；页面上每一个数字都能点开，看到它出自哪一篇文献。
+      </p>
+      <div class="acts">
+        <a class="btn primary" href="./history/index.html">从历史篇读起 →</a>
+        <a class="btn" href="#" id="heroSearch">检索全库</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>六个数字</h2><span class="en">Key figures</span>
+      </div>
+      <p class="lede" style="margin-bottom:1.6rem">先看结论。每一个数字旁边的标记都能点开——里面是它的完整出处和统计口径。</p>
+      <div class="nums" id="numGrid"></div>
+      <p class="tiny" style="margin-top:1rem">
+        基准数据以枣庄市政府新闻办 2025 年 9 月发布会为准；同批数据在山东省发展和改革委员会官网、枣庄日报等渠道一致。
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>四篇 + 文献库</h2><span class="en">Contents</span>
+      </div>
+      <p class="lede" style="margin-bottom:1.6rem">
+        四大类按"从何而来 → 意味着什么 → 值多少钱 → 有什么用"排。文献库不单列一层，它横穿四篇——
+        你可以在任何一页顺着引用走回原文。
+      </p>
+      <div class="entries" id="entryGrid"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>怎么用这个库</h2><span class="en">How to read</span>
+      </div>
+      <div class="trio" style="margin-top:1.4rem">
+        <div class="card reveal">
+          <h3 style="color:var(--red-d)">数字可溯源</h3>
+          <p class="muted" style="font-size:.9rem;margin:.6rem 0 0">
+            看到 <button class="srcchip" data-src="gao-2025" type="button">来源</button> 就点一下。
+            出处不明的数据本库不收——宁可空着，也不给一个查不到的数字。
+          </p>
+        </div>
+        <div class="card reveal">
+          <h3 style="color:var(--red-d)">每条有独立地址</h3>
+          <p class="muted" style="font-size:.9rem;margin:.6rem 0 0">
+            时间轴上的每个节点、文献库里的每条著录，都有自己的锚点地址，可以直接发给别人。
+          </p>
+        </div>
+        <div class="card reveal">
+          <h3 style="color:var(--red-d)">双端同一份内容</h3>
+          <p class="muted" style="font-size:.9rem;margin:.6rem 0 0">
+            横屏和竖屏看到的信息完全一致，只是排列不同。正文可在右上角切三档字号。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div data-foot></div>
+
+<script type="module">
+import { NUMS, SITE } from './data/site.js'
+
+const srcChips = (keys) => (keys || [])
+  .map((k) => `<button class="srcchip" data-src="${k}" type="button">来源</button>`).join('')
+
+document.getElementById('numGrid').innerHTML = NUMS.map((n) => `
+  <div class="cell">
+    <b>${n.v}<i>${n.u}</i></b>
+    <span>${n.t}</span>
+    <div class="srcwrap">${srcChips(n.src)}</div>
+  </div>`).join('')
+
+const COPY = {
+  home: '四篇入口、核心数据、全库检索',
+  history: '两千年时间轴：从《西京杂记》上林苑十株到神舟十二号',
+  culture: '多子多福、石榴裙、花神与榴月——符号是怎么长出来的',
+  industry: '48 亿元怎么来的：种植、加工、盆景、文旅',
+  value: '全株皆宝：籽、皮、叶、花、枝干、根各自值什么',
+  papers: '资料清点：能核的核，核不到的如实标注',
+}
+document.getElementById('entryGrid').innerHTML = SITE.nav
+  .filter((n) => n.key !== 'home')
+  .map((n, i) => `
+    <a class="entry reveal" href="./${n.path}index.html">
+      <span class="idx">${String(i + 1).padStart(2, '0')}</span>
+      <h3>${n.label}</h3>
+      <div class="sub">${n.sub}</div>
+      <p>${COPY[n.key] || ''}</p>
+    </a>`).join('')
+
+document.getElementById('heroSearch')?.addEventListener('click', (e) => {
+  e.preventDefault()
+  document.getElementById('searchOpen')?.click()
+})
+</script>
+<script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>

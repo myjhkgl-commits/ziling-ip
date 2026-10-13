@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="枣庄石榴文化研究文献库：24 条资料清点，能核的核，核不到的如实标注。">
+<title>文献库 ｜ 冠世榴韵</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+<style>
+.paper{
+  border:1px solid var(--line);border-radius:var(--rad);background:var(--surface);
+  padding:1.15rem 1.3rem;margin-bottom:.75rem;
+}
+.paper .meta{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.55rem}
+.paper .cite{font-family:var(--font-serif);font-size:.96rem;line-height:1.75;margin:0}
+.paper .note{font-size:.86rem;color:var(--ink-2);line-height:1.75;margin:.7rem 0 0}
+.badge{font-size:.72rem;line-height:1;border-radius:999px;padding:.28rem .55rem;border:1px solid var(--line-2);color:var(--ink-2)}
+.badge.warn{border-color:color-mix(in srgb, var(--gold) 60%, transparent);color:var(--gold)}
+.tag{font-size:.72rem;line-height:1;border-radius:999px;padding:.28rem .55rem;background:var(--surface-2);color:var(--ink-2)}
+.ghead{margin:2.2rem 0 .3rem;display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
+.ghead h2{font-size:1.2rem;font-family:var(--font-sans);font-weight:600}
+.ghead span{font-size:.84rem;color:var(--ink-3)}
+.filters{display:flex;gap:.4rem;flex-wrap:wrap;margin:1.2rem 0 0}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:.32rem .8rem;font-size:.82rem;color:var(--ink-2)}
+.filters button.on{background:var(--red-l);border-color:var(--red);color:var(--red-d);font-weight:600}
+:target{border-color:var(--red);box-shadow:0 0 0 3px var(--red-l)}
+</style>
+</head>
+<body data-root="../" data-page="papers">
+
+<a class="skip" href="#main">跳到正文</a>
+<div data-nav></div>
+
+<main id="main">
+
+  <header class="hero" style="padding-bottom:1.6rem">
+    <div class="wrap">
+      <span class="kicker">资料清点</span>
+      <h1>文献库</h1>
+      <p class="en">Sources &amp; references</p>
+      <p class="lede">
+        这是这个库的地基。四篇里所有带 [来源] 标记的数字，最终都指回这里的一条著录。
+        收录原则只有一条：<b>能核到出处的按标准格式著录，核不到的如实标「出处待补」</b>——
+        不做格式化包装，宁可难看，也不要一条查不到的引用。
+      </p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="filters" id="filters"></div>
+      <div id="paperList"></div>
+      <div class="todo reveal" style="margin-top:2rem">
+        <b>待补的引用信息</b>：标了「出处待补」的三条，项目文件夹里有 PDF 但缺期刊 / 年份 / 页码。
+        你把原刊信息发我，或者我下次直接读 PDF 首页补齐——补齐后这几条会立刻升为可引用状态。
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div data-foot></div>
+
+<script type="module">
+import { PAPERS, PAPER_GROUPS } from '../data/papers.js'
+
+const list = document.getElementById('paperList')
+const filters = document.getElementById('filters')
+
+filters.innerHTML = ['全部', ...PAPER_GROUPS.map((g) => g.label)]
+  .map((label, i) => `<button data-g="${i === 0 ? '' : PAPER_GROUPS[i - 1].key}" class="${i === 0 ? 'on' : ''}" type="button">${label}</button>`)
+  .join('')
+
+function render(group) {
+  const shown = group ? PAPERS.filter((p) => p.group === group) : PAPERS
+  const groups = group ? PAPER_GROUPS.filter((g) => g.key === group) : PAPER_GROUPS
+  list.innerHTML = groups.map((g) => {
+    const items = shown.filter((p) => p.group === g.key)
+    if (!items.length) return ''
+    return `<div class="ghead"><h2>${g.label}</h2><span>${g.desc}　·　${items.length} 条</span></div>`
+      + items.map((p) => `
+        <article class="paper reveal" id="${p.id}">
+          <div class="meta">
+            <span class="badge">${p.kind}</span>
+            ${p.status === '出处待补' ? '<span class="badge warn">出处待补</span>' : ''}
+            ${(p.tags || []).map((t) => `<span class="tag">${t}</span>`).join('')}
+          </div>
+          <p class="cite">${p.cite}</p>
+          <p class="note">${p.note}</p>
+        </article>`).join('')
+  }).join('')
+  requestAnimationFrame(() => document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-in')))
+}
+
+filters.addEventListener('click', (e) => {
+  const b = e.target.closest('button')
+  if (!b) return
+  filters.querySelectorAll('button').forEach((x) => x.classList.remove('on'))
+  b.classList.add('on')
+  render(b.dataset.g)
+})
+
+render('')
+const total = PAPERS.length
+const todo = PAPERS.filter((p) => p.status === '出处待补').length
+document.querySelector('.hero .lede').insertAdjacentHTML('afterend',
+  `<p class="tiny" style="margin-top:1.1rem">已收录 <span class="mono">${total}</span> 条，其中 <span class="mono">${todo}</span> 条待补引用信息。锚点格式 <span class="mono">#p1 - #p${total}</span>，可直接引用单条。</p>`)
+</script>
+<script type="module" src="../assets/js/app.js"></script>
+</body>
+</html>
