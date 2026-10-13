@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FBF6EF">
+<title>冠世榴韵 · 一颗籽的千年之约</title>
+<style>
+:root{
+  --bg:#FBF6EF; --card:#FFFFFF; --ink:#3E2A24; --ink2:#8A6F63;
+  --red:#C0392B; --red-d:#922B21; --red-l:#F5D6CF;
+  --leaf:#7D9B4E; --leaf-d:#5F7A3A;
+  --gold:#C9A063; --line:#EADFCE;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.6;
+  min-height:100vh; overflow-x:hidden;
+}
+.wrap{max-width:480px;margin:0 auto;padding:0 18px 60px}
+
+/* ---------- 背景飘落花瓣 ---------- */
+.petal{position:fixed;top:-30px;font-size:0;pointer-events:none;z-index:0;opacity:.5;
+  animation:fall linear infinite}
+.petal i{display:block;width:10px;height:14px;background:var(--red-l);
+  border-radius:60% 60% 55% 55%/70% 70% 40% 40%}
+@keyframes fall{to{transform:translateY(110vh) rotate(320deg)}}
+@media (prefers-reduced-motion:reduce){.petal{display:none}}
+
+/* ---------- 顶栏 ---------- */
+header{position:sticky;top:0;z-index:50;background:rgba(251,246,239,.92);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar{max-width:480px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:15px;font-weight:700;color:var(--red-d);letter-spacing:1px}
+.brand span{color:var(--ink2);font-weight:400;font-size:12px;margin-left:6px}
+.stamps{display:flex;align-items:center;gap:7px}
+.stamps .dot{width:11px;height:11px;border-radius:50% 50% 48% 52%/55% 55% 45% 45%;
+  background:#E8DCC8;border:1px solid #D9C9AC;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+.stamps .dot.on{background:var(--red);border-color:var(--red-d);transform:scale(1.15);
+  box-shadow:0 0 0 3px var(--red-l)}
+.stamps .num{font-size:11px;color:var(--ink2);margin-left:2px}
+
+/* ---------- 首屏 ---------- */
+.hero{padding-top:26px;text-align:center;position:relative;z-index:1}
+.hero-card{background:var(--card);border-radius:24px;padding:14px;
+  box-shadow:0 10px 30px rgba(62,42,36,.08);border:1px solid var(--line)}
+.hero-card img{width:100%;display:block;border-radius:16px}
+.kicker{display:inline-block;margin-top:16px;font-size:11px;letter-spacing:3px;
+  color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:3px 12px}
+h1{font-size:27px;margin-top:12px;letter-spacing:2px;color:var(--red-d)}
+h1 em{font-style:normal;color:var(--ink)}
+.sub{font-size:13px;color:var(--ink2);margin-top:6px}
+.hint{margin-top:16px;font-size:13px;color:var(--red-d);
+  animation:breath 2.2s ease-in-out infinite}
+@keyframes breath{50%{opacity:.45;transform:translateY(2px)}}
+
+/* ---------- 石榴舞台 ---------- */
+.stage{position:relative;height:330px;margin-top:8px;cursor:pointer;
+  -webkit-user-select:none;user-select:none;z-index:1}
+.fruit-whole{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  transition:opacity .5s ease,transform .5s ease}
+.fruit-whole svg{width:230px;height:230px;filter:drop-shadow(0 14px 18px rgba(146,43,33,.22))}
+.stage.shake .fruit-whole{animation:quake .45s ease}
+@keyframes quake{20%{transform:rotate(-3deg) scale(1.03)}45%{transform:rotate(3deg) scale(1.05)}
+  70%{transform:rotate(-2deg) scale(1.04)}}
+.stage.open .fruit-whole{opacity:0;transform:scale(.55);pointer-events:none}
+.fruit-open{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:scale(.55);transition:opacity .5s ease .15s,transform .6s cubic-bezier(.34,1.56,.64,1) .15s;
+  pointer-events:none}
+.stage.open .fruit-open{opacity:1;transform:scale(1);pointer-events:auto}
+.cross{width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle at 38% 32%,#FBEEDA,#F3DDBB 70%,#E8CBA0);
+  border:10px solid var(--red-d);box-shadow:inset 0 0 0 6px #E8B4A4,0 16px 26px rgba(146,43,33,.2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:20px}
+.seedrow{display:flex}
+.seed{width:66px;height:70px;margin:-8px -4px;border:none;cursor:pointer;position:relative;
+  background:radial-gradient(circle at 35% 28%,#FF9A8B,#D94343 55%,#9E2B24 95%);
+  border-radius:50% 50% 46% 54%/58% 58% 42% 42%;
+  box-shadow:inset -3px -4px 8px rgba(120,20,15,.45),inset 3px 4px 6px rgba(255,255,255,.35),
+    0 4px 8px rgba(146,43,33,.25);
+  color:#FFF3E8;font-size:15px;font-weight:700;font-family:inherit;
+  opacity:0;transform:scale(.2);transition:none}
+.stage.open .seed{animation:pop .5s cubic-bezier(.34,1.7,.64,1) forwards}
+@keyframes pop{to{opacity:1;transform:scale(1)}}
+.seed:active{transform:scale(.9)}
+.seed::after{content:"";position:absolute;left:14px;top:10px;width:14px;height:9px;
+  background:rgba(255,255,255,.55);border-radius:50%;transform:rotate(-24deg)}
+.tapword{font-size:11px;color:var(--ink2);letter-spacing:2px;margin-top:2px}
+
+/* ---------- 章节通用 ---------- */
+section{margin-top:44px;position:relative;z-index:1}
+h2{font-size:19px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+h2::before{content:"";width:5px;height:20px;border-radius:3px;background:var(--red)}
+h2 small{font-size:11px;color:var(--ink2);font-weight:400;letter-spacing:1px}
+.desc{font-size:13px;color:var(--ink2);margin:6px 0 16px}
+
+/* ---------- 数字石榴 ---------- */
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.num-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 14px}
+.num-card b{display:block;font-size:30px;color:var(--red);font-weight:800;letter-spacing:-.5px}
+.num-card b i{font-style:normal;font-size:14px;font-weight:600;margin-left:2px;color:var(--red-d)}
+.num-card span{font-size:12px;color:var(--ink2)}
+.nums .wide{grid-column:1/-1;background:linear-gradient(135deg,#FFF6EC,#FBE7DC);
+  border-color:#F0D6C4}
+.srcline{font-size:10.5px;color:#B39A85;margin-top:12px;line-height:1.7}
+
+/* ---------- 品种图鉴 ---------- */
+.breed{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:14px 16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;
+  transition:transform .2s}
+.breed:active{transform:scale(.985)}
+.breed .tag{flex:0 0 auto;margin-top:3px;width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:600}
+.breed h3{font-size:15px}
+.breed h3 em{font-style:normal;font-size:10.5px;color:#fff;border-radius:999px;
+  padding:1px 8px;margin-left:6px;vertical-align:2px}
+.breed p{font-size:12.5px;color:var(--ink2);margin-top:3px}
+
+/* ---------- 全株价值链 ---------- */
+.chain{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.chain .row{display:flex;align-items:stretch;border-bottom:1px dashed var(--line)}
+.chain .row:last-child{border-bottom:none}
+.chain .organ{flex:0 0 76px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:var(--red-d);background:#FDF1EC;border-right:1px solid var(--line)}
+.chain .val{flex:1;padding:10px 14px;font-size:12.5px;color:var(--ink2);display:flex;align-items:center}
+.chain .val b{color:var(--ink);font-weight:600}
+
+/* ---------- 集章 / 彩蛋 ---------- */
+.stampbox{background:linear-gradient(135deg,#FFF6EC,#FBE7DC);border:1px solid #F0D6C4;
+  border-radius:20px;padding:20px 18px;text-align:center}
+.stampbox .big{font-size:15px;font-weight:700;color:var(--red-d)}
+.stampbox p{font-size:12.5px;color:var(--ink2);margin-top:6px}
+.stampline{display:flex;justify-content:center;gap:12px;margin-top:14px}
+.stampline .s{width:40px;height:40px;border-radius:50% 50% 46% 54%/58% 58% 42% 42%;
+  background:#fff;border:1.5px dashed #D9BFA4;display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:#CDB49A;font-weight:700;transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.stampline .s.on{background:var(--red);border:1.5px solid var(--red-d);color:#FFF3E8;
+  transform:rotate(-8deg) scale(1.08);box-shadow:0 4px 10px rgba(146,43,33,.3)}
+
+.egg{margin-top:16px;border-radius:22px;overflow:hidden;position:relative;
+  background:var(--card);border:2px solid var(--gold);display:none}
+.egg.show{display:block;animation:eggIn .8s cubic-bezier(.34,1.56,.64,1)}
+@keyframes eggIn{from{opacity:0;transform:translateY(24px) scale(.94)}}
+.egg img{width:100%;display:block}
+.egg .cap{padding:16px 18px 20px}
+.egg .cap h3{font-size:16px;color:var(--red-d)}
+.egg .cap p{font-size:12.5px;color:var(--ink2);margin-top:6px}
+.egg .badge{position:absolute;top:12px;left:12px;background:var(--gold);color:#fff;
+  font-size:11px;padding:3px 10px;border-radius:999px;letter-spacing:1px}
+
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:10.5px;color:#B39A85;line-height:1.9}
+footer b{color:var(--ink2)}
+
+/* ---------- 弹窗 ---------- */
+.mask{position:fixed;inset:0;background:rgba(46,26,20,.5);z-index:90;display:none;
+  align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.mask.show{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:480px;border-radius:26px 26px 0 0;
+  padding:24px 22px 40px;animation:up .38s cubic-bezier(.34,1.4,.64,1);position:relative}
+@keyframes up{from{transform:translateY(60%);opacity:.4}}
+.sheet .gem{width:52px;height:56px;margin-bottom:14px;position:relative;
+  background:radial-gradient(circle at 35% 28%,#FF9A8B,#D94343 55%,#9E2B24 95%);
+  border-radius:50% 50% 46% 54%/58% 58% 42% 42%;
+  box-shadow:inset -3px -4px 8px rgba(120,20,15,.45),inset 3px 4px 6px rgba(255,255,255,.35)}
+.sheet h3{font-size:19px;color:var(--red-d)}
+.sheet .tagline{display:inline-block;font-size:10.5px;color:var(--gold);
+  border:1px solid var(--gold);border-radius:999px;padding:2px 10px;margin:8px 0 12px;letter-spacing:1px}
+.sheet p{font-size:14px;color:var(--ink)}
+.sheet .src{font-size:10.5px;color:#B39A85;margin-top:14px;line-height:1.7}
+.sheet .close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
+  border:none;background:#EFE3D2;color:var(--ink2);font-size:15px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div id="petals"></div>
+
+<header>
+  <div class="bar">
+    <div class="brand">冠世榴韵<span>扫码版</span></div>
+    <div class="stamps" id="stamps">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="dot"></span><span class="dot"></span>
+      <span class="num" id="stampNum">0/5</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 首屏 -->
+  <div class="hero">
+    <div class="hero-card"><img src="ziling.jpg" alt="籽灵"></div>
+    <div class="kicker">石榴文化信息可视化 · 扫码交互版</div>
+    <h1>一颗籽的<em>千年之约</em></h1>
+    <p class="sub">你好，我是籽灵。我带来了一颗石榴——<br>里面装着枣庄两千年的故事。</p>
+    <div class="hint" id="hint">↓ 轻触石榴，把它剥开</div>
+  </div>
+
+  <!-- 剥石榴 -->
+  <div class="stage" id="stage">
+    <div class="fruit-whole">
+      <svg viewBox="0 0 200 200" aria-label="一颗石榴">
+        <defs>
+          <radialGradient id="gb" cx="38%" cy="30%" r="80%">
+            <stop offset="0%" stop-color="#E85C4A"/><stop offset="55%" stop-color="#C0392B"/>
+            <stop offset="100%" stop-color="#8E2119"/>
+          </radialGradient>
+        </defs>
+        <path d="M80 52 L86 22 L95 40 L100 16 L105 40 L114 22 L120 52 Z" fill="#7D9B4E"/>
+        <path d="M80 52 L86 22 L95 40 L100 16 L100 52 Z" fill="#93B263"/>
+        <circle cx="100" cy="120" r="70" fill="url(#gb)"/>
+        <ellipse cx="74" cy="94" rx="20" ry="12" fill="#FFFFFF" opacity="0.18" transform="rotate(-24 74 94)"/>
+        <path d="M60 158 Q100 176 140 158" stroke="#8E2119" stroke-width="2" fill="none" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="fruit-open">
+      <div class="cross">
+        <div class="seedrow">
+          <button class="seed" style="animation-delay:.05s" data-i="0">1</button>
+          <button class="seed" style="animation-delay:.15s" data-i="1">2</button>
+          <button class="seed" style="animation-delay:.25s" data-i="2">3</button>
+        </div>
+        <div class="seedrow" style="margin-left:32px">
+          <button class="seed" style="animation-delay:.35s" data-i="3">4</button>
+          <button class="seed" style="animation-delay:.45s" data-i="4">5</button>
+          <button class="seed" style="animation-delay:.55s" data-i="5">6</button>
+        </div>
+        <div class="seedrow" style="margin-left:-30px">
+          <button class="seed" style="animation-delay:.65s" data-i="6">7</button>
+          <button class="seed" style="animation-delay:.75s" data-i="7">8</button>
+        </div>
+        <div class="tapword">点一颗籽 · 听它的故事</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 数字石榴 -->
+  <section>
+    <h2>数字石榴<small>DEEP DATA</small></h2>
+    <p class="desc">这颗石榴结出的真实果实——每一个数字都有官方出处。</p>
+    <div class="nums">
+      <div class="num-card"><b>48<i>亿元</i></b><span>2024 年石榴全产业链产值</span></div>
+      <div class="num-card"><b>12<i>万亩</i></b><span>种植面积 · 650 余万株</span></div>
+      <div class="num-card"><b>1.2<i>亿斤</i></b><span>年产量，秋分后陆续上市</span></div>
+      <div class="num-card"><b>523<i>份</i></b><span>种质资源保存量 · 全国第一</span></div>
+      <div class="num-card"><b>180<i>万人次</i></b><span>冠世榴园年接待游客</span></div>
+      <div class="num-card"><b>200<i>余款</i></b><span>深加工产品 · 上下游企业 53 家</span></div>
+      <div class="num-card wide"><b>95<i>%+</i></b><span>全国石榴盆景产自枣庄——年产约 20 万盆，"中国石榴盆景之都"</span></div>
+    </div>
+    <p class="srcline">数据来源：枣庄市政府新闻办 2025 石榴产业发展大会新闻发布会（2025-09-15，副市长彭照辉发布）；山东省发展和改革委员会官网转载。</p>
+  </section>
+
+  <!-- 品种图鉴 -->
+  <section>
+    <h2>品种图鉴<small>VARIETY</small></h2>
+    <p class="desc">峄城石榴 48 个品种里的六个代表。</p>
+    <div id="breeds"></div>
+  </section>
+
+  <!-- 全株价值链 -->
+  <section>
+    <h2>全株皆宝<small>VALUE CHAIN</small></h2>
+    <p class="desc">从根到花，一株石榴没有一处被浪费。</p>
+    <div class="chain" id="chain"></div>
+  </section>
+
+  <!-- 集章 -->
+  <section>
+    <div class="stampbox">
+      <div class="big">🍈 五张展板 · 五枚印章</div>
+      <p>本套作品共 5 张展板，每张藏有一枚专属二维码。<br>扫齐 5 枚，籽灵会为你解锁一个隐藏彩蛋。</p>
+      <div class="stampline" id="stampline"></div>
+    </div>
+    <div class="egg" id="egg">
+      <span class="badge">HIDDEN · 彩蛋已解锁</span>
+      <img src="ziling.jpg" alt="籽灵的隐藏形象">
+      <div class="cap">
+        <h3>籽灵的悄悄话</h3>
+        <p>你把五张展板都看完了——谢谢你的认真。<br>我叫籽灵，从一颗石榴籽里诞生。传说两千年前，丞相匡衡把石榴从长安带回我的家乡峄城；今天，我的家乡每年产出全国九成以上的石榴盆景，我的 523 位"亲戚"住在全国唯一的石榴种质资源库里。<br>下一颗石榴，等你来剥。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <b>《冠世榴韵——枣庄石榴文化信息可视化系列》扫码交互版</b><br>
+    策划 / 视觉 / IP：籽灵团队 ｜ 数据来源：枣庄市政府新闻办、《中国药典》、《中国食物成分表》、《博物志》、《北史·魏收传》等，详见展板脚注<br>
+    本页所有数据均经核实，统计口径以官方发布为准。
+  </footer>
+</div>
+
+<!-- 弹窗 -->
+<div class="mask" id="mask">
+  <div class="sheet">
+    <button class="close" id="closeBtn">✕</button>
+    <div class="gem"></div>
+    <h3 id="mTitle"></h3>
+    <div class="tagline" id="mTag"></div>
+    <p id="mBody"></p>
+    <div class="src" id="mSrc"></div>
+  </div>
+</div>
+
+<script>
+/* ---------------- 数据 ---------------- */
+const SEEDS=[
+ {t:"张骞与安石榴",tag:"历史 · 相传",b:"《博物志》载：\"汉张骞出使西域，得涂林安石国榴种以归，故名安石榴。\"石榴沿丝绸之路进入中原——这是它中国故事的开端。学界亦有\"渐次传入\"之说，但丝路是它公认的家门。",s:"出处：晋 · 张华《博物志》"},
+ {t:"匡衡引种峄城",tag:"历史 · 枣庄起点",b:"西汉成帝年间，丞相匡衡将石榴从皇家上林苑引至家乡东海郡承县（今枣庄峄城）。枣庄两千余年的石榴种植史，从这里开始。",s:"出处：山东省民政厅《中国石榴之乡——冠世榴园》、光绪《峄县志》"},
+ {t:"马王堆的石榴籽",tag:"历史 · 最早实物",b:"长沙马王堆一号汉墓（约公元前 168 年，辛追夫人墓）出土了石榴籽——这是中国境内经科学发掘、年代最早的石榴实物遗存。",s:"出处：湖南博物院马王堆汉墓考古资料"},
+ {t:"冠世榴园",tag:"地理 · 吉尼斯之最",b:"枣庄峄城石榴园东西绵延 22.5 公里、面积约 12 万亩、榴树 530 余万株，被上海大世界基尼斯总部认证为\"吉尼斯之最\"，因而得名\"冠世榴园\"。",s:"出处：枣庄市民政局、峄城区人民政府官网"},
+ {t:"多子多福的正史依据",tag:"文化 · 典故",b:"《北史 · 魏收传》记载：北齐安德王高延宗纳妃，妃母献上石榴，祝\"愿王新婚多子\"。从此\"石榴多子\"写进正史，成为婚嫁祥瑞。",s:"出处：《北史 · 魏收传》"},
+ {t:"秋艳 · 国审良种",tag:"品种 · 中国芯",b:"国内首个、也是目前唯一通过国家审定的石榴良种。籽粒百粒重 73.9 克（传统大青皮仅 30 余克），裂果率低于 3%，出汁率 50%，可储存 130 天赶上春节。",s:"出处：山东省林业科学研究院、枣庄市石榴研究院"},
+ {t:"中国石榴盆景之都",tag:"产业 · 一绝",b:"枣庄年产石榴盆景约 20 万盆，占全国 95% 以上；在园盆景超 30 万盆，从业匠人 3500 余人，累计获国内外大奖 300 余项。1986 年，峄城石榴进京参展，被誉为\"齐鲁一绝\"。",s:"出处：齐鲁壹点、峄城区人民政府官网"},
+ {t:"一颗籽上太空",tag:"未来 · 太空育种",b:"2021 年，峄城 500 余颗石榴种搭乘神舟十二号载人飞船进入中国空间站，在轨停留 90 天，完成首次石榴太空诱变育种——古老的石榴，正在书写新的两千年。",s:"出处：中国网《一粒榴籽，一座城》（2025-09）"}
+];
+const BREEDS=[
+ {n:"大青皮",t:"当家品种",c:"#7D9B4E",d:"果皮青绿、向阳面红晕。单果约 630g，特大可达 1580g，汁多味浓。占枣庄种植面积约八成，缺点是不抗裂果。"},
+ {n:"大红袍",t:"传统名品",c:"#C0392B",d:"果皮鲜红、色泽艳丽，籽粒深红饱满，甜中带酸、香气突出，9 月下旬成熟。"},
+ {n:"青皮谢花甜",t:"早熟口粮",c:"#C9A063",d:"籽粒膨大初期即无涩味，故得名\"谢花甜\"。果皮黄绿带红晕，味酸甜，9 月初成熟。"},
+ {n:"软仁石榴",t:"峄城珍品",c:"#D4537E",d:"籽粒柔软可食、无需吐籽，是峄城地方志里记载的传统珍品——注意它不是外来的\"突尼斯软籽\"。"},
+ {n:"三白 · 冰糖籽",t:"甜度担当",c:"#B39A85",d:"花白、皮白、籽白，口感甘甜如冰糖，是枣庄民间最有辨识度的老品种之一。"},
+ {n:"秋艳",t:"国审新品种",c:"#922B21",d:"山东省林科院与枣庄市石榴研究中心联合选育，国内首个国审石榴良种。百粒重 73.9g、极抗裂果、糖度超 18°。"}
+];
+const CHAIN=[
+ ["果汁果肉","石榴汁、酒、醋、酵素，王老吉系列经 <b>26 道工序</b>，深加工产品 <b>200 余款</b>"],
+ ["籽","石榴籽油每吨售价 <b>40 万元</b>；软仁品种可连籽嚼食"],
+ ["果皮","提取单宁用于化妆品；石榴皮兽药<b>填补国内空白</b>"],
+ ["叶","石榴叶茶、降压茶包；榴芽茶制作技艺为市级非遗"],
+ ["花","观花（榴花节）；石榴花止血入药，可制花茶"],
+ ["枝干","石榴盆景年产 <b>20 万盆</b>、占全国 <b>95% 以上</b>、产值 <b>5–6 亿元</b>"],
+ ["根","石榴根皮驱虫入药；石榴树根非遗根雕，单件售价<b>上万元</b>"]
+];
+
+/* ---------------- 渲染 ---------------- */
+document.getElementById('breeds').innerHTML=BREEDS.map(b=>`
+ <div class="breed"><div class="tag" style="background:${b.c}">${b.t.slice(0,2)}</div>
+  <div><h3>${b.n}<em style="background:${b.c}">${b.t}</em></h3><p>${b.d}</p></div></div>`).join('');
+document.getElementById('chain').innerHTML=CHAIN.map(r=>`
+ <div class="row"><div class="organ">${r[0]}</div><div class="val">${r[1]}</div></div>`).join('');
+
+/* ---------------- 剥石榴 ---------------- */
+const stage=document.getElementById('stage'),hint=document.getElementById('hint');
+let opened=false;
+stage.addEventListener('click',()=>{
+  if(opened)return;
+  if(!stage.classList.contains('shake')){
+    stage.classList.add('shake');navigator.vibrate&&navigator.vibrate(20);
+    setTimeout(()=>{stage.classList.remove('shake');stage.classList.add('open');
+      hint.textContent='点一颗籽，听它的故事';navigator.vibrate&&navigator.vibrate([15,40,25]);
+      opened=true;},480);
+  }
+});
+
+/* ---------------- 弹窗 ---------------- */
+const mask=document.getElementById('mask');
+function openSeed(i){
+  const d=SEEDS[i];
+  document.getElementById('mTitle').textContent=d.t;
+  document.getElementById('mTag').textContent=d.tag;
+  document.getElementById('mBody').textContent=d.b;
+  document.getElementById('mSrc').textContent=d.s;
+  mask.classList.add('show');navigator.vibrate&&navigator.vibrate(10);
+}
+document.querySelectorAll('.seed').forEach(s=>s.addEventListener('click',e=>{
+  e.stopPropagation();openSeed(+e.currentTarget.dataset.i);}));
+document.getElementById('closeBtn').addEventListener('click',()=>mask.classList.remove('show'));
+mask.addEventListener('click',e=>{if(e.target===mask)mask.classList.remove('show')});
+
+/* ---------------- 集章 ---------------- */
+const KEY='glyz_stamps';
+let stamps=[];
+try{stamps=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){stamps=[]}
+const q=new URLSearchParams(location.search).get('p');
+if(q&&q>='1'&&q<='5'&&!stamps.includes(q)){stamps.push(q);localStorage.setItem(KEY,JSON.stringify(stamps))}
+function drawStamps(){
+  const dots=document.querySelectorAll('#stamps .dot');
+  dots.forEach((d,i)=>d.classList.toggle('on',i<stamps.length));
+  document.getElementById('stampNum').textContent=stamps.length+'/5';
+  document.getElementById('stampline').innerHTML=[1,2,3,4,5].map(n=>
+    `<div class="s ${stamps.includes(String(n))?'on':''}">${n}</div>`).join('');
+  if(stamps.length>=5){
+    document.getElementById('egg').classList.add('show');
+    document.getElementById('hint').textContent='五枚印章集齐，彩蛋已解锁 ↑';
+  }
+}
+drawStamps();
+
+/* ---------------- 花瓣 ---------------- */
+const pw=document.getElementById('petals');
+for(let i=0;i<9;i++){
+  const p=document.createElement('div');p.className='petal';
+  p.innerHTML='<i></i>';
+  p.style.left=(Math.random()*96+2)+'%';
+  p.style.animationDuration=(9+Math.random()*9)+'s';
+  p.style.animationDelay=(-Math.random()*14)+'s';
+  const sc=.6+Math.random()*.8;p.firstChild.style.transform='scale('+sc+')';
+  pw.appendChild(p);
+}
+</script>
+</body>
+</html>
