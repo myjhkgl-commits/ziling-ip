@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { assetOf } from '../data/ethnics'
+import { assetOf, posterThumbOf } from '../data/ethnics'
 import { useLightbox } from './Lightbox'
 
 export default function EthnicModal({ item, posterMissing, onClose }) {
@@ -13,16 +13,22 @@ export default function EthnicModal({ item, posterMissing, onClose }) {
 
   const pad = String(item.n).padStart(2, '0')
 
+  // 弹窗内的预览用小图；放大查看时才加载原尺寸
   const avatar = assetOf(item.n, 'avatar')
   const ref = assetOf(item.n, 'ref')
   const poster = posterMissing ? null : assetOf(item.n, 'poster')
+  const posterPreview = posterThumbOf(item.n)
 
-  // 放大查看图集：形象 → 参考形象 → 海报
+  // 放大查看图集：形象 → 参考形象 → 海报（全部为原尺寸）
   const shots = [
     { src: avatar, alt: `${item.name}籽灵形象`, caption: `${item.name} · ${item.ip} 籽灵形象` },
     { src: ref, alt: `${item.name}参考形象`, caption: `${item.name} · 参考形象` },
   ]
   if (poster) shots.push({ src: poster, alt: `${item.name}形象海报`, caption: `${item.name} · 形象海报` })
+
+  // 弹窗预览：形象与参考形象直接点开原图；海报先显示 640px 预览、点开看 1400px 原图
+  const refShots = shots.slice(0, 2)
+  const posterShots = [{ src: posterPreview, alt: `${item.name}形象海报`, caption: `${item.name} · 形象海报` }]
 
   return (
     <div className="modal" role="dialog" aria-modal="true" onClick={onClose}>
@@ -37,7 +43,7 @@ export default function EthnicModal({ item, posterMissing, onClose }) {
             alt={`${item.name}籽灵形象`}
             draggable="false"
             decoding="async"
-            onClick={() => openAt(shots, 0)}
+            onClick={() => openAt(refShots, 0)}
           />
           <span className="modal__num">{pad}</span>
         </div>
@@ -61,7 +67,7 @@ export default function EthnicModal({ item, posterMissing, onClose }) {
           </div>
 
           <div className="modal__gallery">
-            <figure className="zoomable" onClick={() => openAt(shots, 1)}>
+            <figure className="zoomable" onClick={() => openAt(refShots, 1)}>
               <img
                 src={ref}
                 alt={`${item.name}参考形象`}
@@ -72,7 +78,7 @@ export default function EthnicModal({ item, posterMissing, onClose }) {
               <figcaption>参考形象</figcaption>
             </figure>
             {posterMissing ? (
-              <figure className="zoomable" onClick={() => openAt(shots, 0)}>
+              <figure className="zoomable" onClick={() => openAt(refShots, 0)}>
                 <img
                   src={avatar}
                   alt={`${item.name}籽灵形象`}
@@ -83,9 +89,9 @@ export default function EthnicModal({ item, posterMissing, onClose }) {
                 <figcaption>籽灵形象</figcaption>
               </figure>
             ) : (
-              <figure className="zoomable" onClick={() => openAt(shots, 2)}>
+              <figure className="zoomable" onClick={() => openAt(posterShots, 0)}>
                 <img
-                  src={poster}
+                  src={posterPreview}
                   alt={`${item.name}形象海报`}
                   loading="lazy"
                   decoding="async"

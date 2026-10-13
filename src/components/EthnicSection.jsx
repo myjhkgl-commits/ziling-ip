@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { ethnics, assetOf, POSTER_MISSING } from '../data/ethnics'
+import { ethnics, thumbOf, POSTER_MISSING } from '../data/ethnics'
 import EthnicModal from './EthnicModal'
 
 function pad(n) {
@@ -48,9 +48,13 @@ export default function EthnicSection() {
             >
               <span className="ecard__num">{pad(e.n)}</span>
               <div className="ecard__stage">
+                {/* 网格用 300px 小图（单张约 15KB，56 张全列表约 0.9MB）；
+                    点开弹窗时才加载 900px 原图 */}
                 <img
-                  src={assetOf(e.n, 'avatar')}
+                  src={thumbOf(e.n)}
                   alt={`${e.name}籽灵形象`}
+                  width="300"
+                  height="400"
                   loading="lazy"
                   decoding="async"
                   draggable="false"

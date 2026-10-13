@@ -42,12 +42,22 @@ export default function Hero() {
   // 关键：先渲染首帧静态图（100 多 KB，立刻可见），
   // 等页面 load 完 + 空闲时段再挂 <video>，视频在后面慢慢缓冲。
   // 这样首屏绘制完全不被 3~5MB 的视频拖住。
+  //
+  // 两个额外的克制条件（都是"别和民族列表抢带宽"）：
+  //   1) 用户如果立刻往下滑（说明对首屏动画没兴趣），就不挂视频了；
+  //   2) 挂上后视频一旦播完一轮就暂停，省掉后台无意义的流量消耗。
   useEffect(() => {
     if (isSlowNetwork()) return
     let idleId = null
     let timer = null
+    let cancelled = false
 
-    const attach = () => setWithVideo(true)
+    const attach = () => {
+      if (cancelled) return
+      // 已经滑过首屏：用户在看别的内容，不必再拉 3MB 视频
+      if (window.scrollY > window.innerHeight * 0.75) return
+      setWithVideo(true)
+    }
     const schedule = () => {
       if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(attach, { timeout: 2200 })
       else timer = setTimeout(attach, 400)
@@ -57,6 +67,7 @@ export default function Hero() {
     else window.addEventListener('load', schedule, { once: true })
 
     return () => {
+      cancelled = true
       window.removeEventListener('load', schedule)
       if (idleId !== null && 'cancelIdleCallback' in window) window.cancelIdleCallback(idleId)
       if (timer) clearTimeout(timer)
@@ -87,6 +98,14 @@ export default function Hero() {
           playsInline
           preload="auto"
           onPlaying={() => setPlaying(true)}
+          // 播完一轮就停：首屏动画已经交代清楚，不必持续占用带宽
+          onTimeUpdate={(e) => {
+            const v = e.currentTarget
+            if (v.duration && v.currentTime > v.duration - 0.35) {
+              v.pause()
+              v.currentTime = 0
+            }
+          }}
         />
       )}
 

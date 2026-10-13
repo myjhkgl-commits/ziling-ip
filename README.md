@@ -14,20 +14,26 @@ npm run build
 
 ```
 public/
-  img/ethnics/avatar/{1..56}.webp   56 个民族籽灵形象（透明底，900px）
+  img/ethnics/thumb/{1..56}.webp    56 个网格卡小图（300px，单张约 17KB）—— 列表用
+  img/ethnics/avatar/{1..56}.webp   56 个民族籽灵形象（透明底，900px）—— 弹窗/放大用
   img/ethnics/ref/{1..56}.webp      各民族参考形象（统一 webp，1000px）
-  img/ethnics/poster/{1..55}.webp   二期民族形象海报（8 号源图过小已移除，弹窗降级显示形象图）
+  img/ethnics/poster-thumb/{1..56}.webp  海报预览（640px，单张约 56KB）—— 弹窗用
+  img/ethnics/poster/{1..55}.webp   二期民族形象海报（1400px，单张约 213KB）—— 放大用
+                                    （8 号源图过小已移除，弹窗降级显示形象图）
   img/main/*                        主 IP 素材：三视图、主形象、场景、盲盒、周边、表情包
   video/hero.mp4                    首页视频背景 · 桌面档 1920x1080
   video/hero-720.mp4                首页视频背景 · 中档 1280x720（平板/小笔记本/手机横屏）
   video/hero-mobile.mp4             首页视频背景 · 手机竖屏档 720x1280
   video/*-poster.jpg                各档首帧海报，首屏立即显示（视频随后在后台缓冲）
 src/
-  data/ethnics.js   56 个民族数据（民族名、IP 名、slogan、地区、简介、设计说明）+ 资源路径 helper
+  data/ethnics.js   56 个民族数据（民族名、IP 名、slogan、地区、简介、设计说明）
+                    + assetOf(n, kind) 取 900/1400px 原图（弹窗与放大查看）
+                    + thumbOf(n) 取 300px 网格小图 + posterThumbOf(n) 取 640px 海报预览
   components/       Navbar / Hero / EthnicSection / EthnicModal / MainIP / Footer / Lightbox
   index.css         暗色设计系统（CSS 变量：--red 石榴红、--jade 叶绿、--gold 金）
 scripts/
-  prepare-assets.py 素材处理脚本：从项目素材目录压缩、重命名、输出到 public（含 41-46 号原型图编号修正）
+  prepare-assets.py 素材处理脚本：从项目素材目录压缩、重命名、输出到 public
+                    （一步出 thumb / avatar / ref / poster-thumb / poster 五档，含 41-46 号原型图编号修正）
 ```
 
 ## 图片放大查看（Lightbox）
@@ -38,6 +44,7 @@ scripts/
 - 已接入：主 IP 六张卡片、民族详情弹窗内的形象图 / 参考形象 / 海报。
 - 交互：点击图片放大（再点还原，放大后可拖拽平移）、左右箭头或滑动切换、Esc 关闭、`←/→` 翻页、打开时锁背景滚动、切换前预加载相邻图。
 - 56 民族网格卡片点击仍是打开详情弹窗，详情里的图可再放大。
+- **放大查看时才加载原尺寸图**：网格卡用 300px 小图，弹窗海报预览用 640px，`openAt` 传入的始终是 900px / 1400px 原图路径。加载量跟着「用户真的点开了」走，不点就不下载。
 
 
 ## 素材编号约定
@@ -103,19 +110,33 @@ ffmpeg -ss 0.5 -i hero-mobile.mp4 -frames:v 1 -q:v 4 setsar=1 hero-mobile-poster
 
 首屏关键路径（手机竖屏）：HTML + CSS（gzip 5.9KB）+ JS（gzip 59KB）+ 首帧图 114KB ≈ **180KB**，视频在后台缓冲，不阻塞首屏绘制。
 
+图片资源做了**按用途分档**，这是民族列表能不能"滑得动"的关键 —— 同一张籽灵形象，网格里只需要 300px 宽，弹窗里要 900px，放大查看要原尺寸，分开存比一份大图处处通用要省得多：
+
+| 用途 | 目录 | 尺寸 | 单张 | 合计 |
+| --- | --- | --- | --- | --- |
+| 网格卡（56 张同屏） | `thumb/` | 300px | ~17KB | 0.93MB |
+| 弹窗主图 / 放大查看 | `avatar/` | 900px | ~94KB | 5.16MB |
+| 弹窗海报预览 | `poster-thumb/` | 640px | ~56KB | 3.08MB |
+| 放大查看海报 | `poster/` | 1400px | ~213KB | 11.64MB |
+| 参考形象 | `ref/` | ~1000px | ~63KB | 3.45MB |
+
+效果：手机一屏 8 张卡从约 754KB 降到 **136KB**（≈1/5.5）；点开一个弹窗的图片从约 310KB 降到 **73KB**。
+
 已做的优化，改动时可对照别破坏：
 
-1. **Hero 先图后视频**（`Hero.jsx`）：`<img>` 首帧立即渲染，`window.load` 后经 `requestIdleCallback` 才挂 `<video>`，播放开始再淡入。这样 3~5MB 的视频不会拖住首屏。
-2. **三档片源**，按屏幕选最省的一档（≥1025 / ≤1024 / ≤900 竖屏）。
-3. **弱网降级**：`navigator.connection.saveData` 为真或 `effectiveType` 是 2g 时，只显示首帧静图，不拉视频。
-4. **首帧预加载**：`index.html` 里三条 `<link rel="preload" as="image">` 带 media 条件 + `fetchpriority="high"`。
-5. **图片全部 WebP**：海报 18.3MB→11.6MB、参考图 4.4MB→3.5MB。头像保持 900px（要支撑全屏放大查看）。
-6. **懒加载**：网格与弹窗图片 `loading="lazy"` + `decoding="async"`。
-7. **缓存友好**：Vite 产物带内容哈希，GitHub Pages 长缓存。
+1. **网格用小图、弹窗用中图、放大才用大图**（`thumbOf` / `assetOf` / `posterThumbOf`）。56 张卡同时进视口，只这一项就省下 4.2MB。
+2. **Hero 先图后视频**（`Hero.jsx`）：`<img>` 首帧立即渲染，`window.load` 后经 `requestIdleCallback` 才挂 `<video>`，播放开始再淡入。这样 3~5MB 的视频不会拖住首屏。
+3. **不跟列表抢带宽**：用户若在视频挂载前已经滑过首屏 3/4，就干脆不挂视频；挂上后播完一轮即暂停。
+4. **三档片源**，按屏幕选最省的一档（≥1025 / ≤1024 / ≤900 竖屏）。
+5. **弱网降级**：`navigator.connection.saveData` 为真或 `effectiveType` 是 2g 时，只显示首帧静图，不拉视频。
+6. **首帧预加载**：`index.html` 里三条 `<link rel="preload" as="image">` 带 media 条件 + `fetchpriority="high"`。
+7. **图片全部 WebP**：海报 18.3MB→11.6MB、参考图 4.4MB→3.5MB。
+8. **懒加载 + 尺寸占位**：网格图片 `loading="lazy"` + `decoding="async"`，并带 `width/height`，避免图片到达时列表跳动。
+9. **缓存友好**：Vite 产物带内容哈希，GitHub Pages 长缓存。
 
 仍可继续优化的方向（按收益排序）：
 
 - **换成国内可访问的托管/CDN**。GitHub Pages 服务器在境外，国内首字节常要 1–3 秒（实测首次打开约 8 秒）。这是目前「很多人说慢」的最大原因，站内再优化也救不了这一层。可选：腾讯云 COS + CDN、阿里云 OSS + CDN、Cloudflare Pages。
-- **海报按需再分档**：现在弹窗/放大查看单张约 210KB，若做 `srcset` 可再省一半。
+- **海报按需再分档**：放大查看单张 213KB，若做 `srcset` 可再省一半。
 - 头像做 `srcset` 双尺寸（网格用小图、放大看用大图）。
 

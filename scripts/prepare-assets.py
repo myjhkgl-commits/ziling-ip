@@ -44,6 +44,15 @@ for n in sorted(found):
     convert(os.path.join(av_src, found[n]), os.path.join(av_out, f"{n}.webp"),
             max_side=900, quality=88, keep_alpha=True)
 
+# ---------- 1b. 网格卡小图（thumb）----------
+# 民族网格里 56 张图同屏，原图单张约 90KB、合计 5.2MB，是列表"慢"的主因。
+# 网格单元最大仅约 250px 宽，缩到 300px 足够清晰，单张降到约 15KB。
+# 弹窗与放大查看仍用 900px 原图，不受影响。
+th_out = ensure(os.path.join(SITE, "img", "ethnics", "thumb"))
+for n in sorted(found):
+    convert(os.path.join(av_src, found[n]), os.path.join(th_out, f"{n}.webp"),
+            max_side=300, quality=82, keep_alpha=True)
+
 # ---------- 2. 原型参考图（编号修正：41-46 错位） ----------
 ref_src = os.path.join(BASE, "260814一期民族形象")
 ref_out = ensure(os.path.join(SITE, "img", "ethnics", "ref"))
@@ -80,8 +89,10 @@ for n in range(1, 57):
             max_side=1000, quality=80, to_jpg=False)
 
 # ---------- 3. 民族海报（压缩为 webp：比 jpg 小约 1/3，弹窗/放大查看更快） ----------
+# 一步到位出两档：poster/ 供放大查看，poster-thumb/ 供弹窗预览（浏览器实际只显示约 600px 宽）
 po_src = os.path.join(BASE, "260921-二期民族海报")
 po_out = ensure(os.path.join(SITE, "img", "ethnics", "poster"))
+po_th_out = ensure(os.path.join(SITE, "img", "ethnics", "poster-thumb"))
 po_found = {}
 for f in os.listdir(po_src):
     n = leading_num(f)
@@ -90,6 +101,8 @@ for f in os.listdir(po_src):
 for n in sorted(po_found):
     convert(os.path.join(po_src, po_found[n]), os.path.join(po_out, f"{n}.webp"),
             max_side=1400, quality=82, to_jpg=False)
+    convert(os.path.join(po_src, po_found[n]), os.path.join(po_th_out, f"{n}.webp"),
+            max_side=640, quality=78, to_jpg=False)
 
 # ---------- 4. 主 IP 素材 ----------
 main_out = ensure(os.path.join(SITE, "img", "main"))

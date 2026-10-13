@@ -406,3 +406,11 @@ export const assetOf = (n, kind) => {
   if (kind === 'ref') return `img/ethnics/ref/${n}.webp`
   return null
 }
+
+// 网格卡专用小图：把 90KB 的头像降到约 15KB。
+// 56 张同时出现在一个网格里，这一项对首屏和滚动流畅度影响最大。
+// 原尺寸图仍由 assetOf 返回，供弹窗与放大查看使用。
+export const thumbOf = (n) => `img/ethnics/thumb/${n}.webp`
+
+// 弹窗里的海报预览：浏览器实际只显示约 600px 宽，用 640px 档即可
+export const posterThumbOf = (n) => `img/ethnics/poster-thumb/${n}.webp`
