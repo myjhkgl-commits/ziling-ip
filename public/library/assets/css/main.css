@@ -1,27 +1,32 @@
 /* ============================================================
    冠世榴韵 · 枣庄石榴文化信息库
-   设计系统 v0.1 —— 典籍 / 档案质感
+   设计系统 v0.2 —— 夜宴 / 典藏质感（暗色，与作品同源）
+   色板取自《冠世榴韵》系列作品图：
+   黑棕底 · 朱砂红 · 正金 · 桑基图青绿 · 暖白文字
    双端同源：桌面与手机共用同一套 token 与组件，仅断点调整排布
    ============================================================ */
 
 /* ---------- 1. tokens ---------- */
 :root{
-  color-scheme: light;
-  --paper:#F7F3EC;
-  --surface:#FFFFFF;
-  --surface-2:#F2ECE1;
-  --surface-3:#EAE1D2;
-  --ink:#2E2A26;
-  --ink-2:#6B6154;
-  --ink-3:#9C9082;
-  --line:#E4DBCD;
-  --line-2:#D3C7B4;
-  --red:#A32D2D;
-  --red-d:#7A1F1F;
-  --red-l:#F5E3DF;
-  --gold:#A9823F;
-  --leaf:#5F7A3A;
-  --shadow:0 1px 2px rgba(46,42,38,.04), 0 10px 28px rgba(46,42,38,.07);
+  color-scheme: dark;
+  --paper:#171009;
+  --surface:#221712;
+  --surface-2:#291C15;
+  --surface-3:#312217;
+  --ink:#F3E9DA;
+  --ink-2:#C9B9A4;
+  --ink-3:#9B8B77;
+  --line:#3A291D;
+  --line-2:#523A26;
+  --red:#E0766A;        /* 主强调：亮朱砂（暗底可读） */
+  --red-d:#F0A99C;      /* 标题 / 当前项 / hover 文字 */
+  --red-l:#3C211A;      /* 选中底色块 */
+  --red-deep:#A32D2D;   /* 深朱砂：渐变端 / 边框 */
+  --gold:#D2AC72;       /* 正金 */
+  --jade:#5FA8B8;       /* 桑基图青绿，点缀用 */
+  --leaf:#9DBE6C;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 36px rgba(0,0,0,.45);
+  --glow:0 0 0 1px rgba(210,172,114,.14), 0 14px 36px rgba(0,0,0,.45);
   --maxw:1180px;
   --read:68ch;
   --rad:14px;
@@ -30,26 +35,6 @@
   --font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
   --font-serif:"Songti SC","Noto Serif SC","Source Han Serif SC",Georgia,"SimSun",serif;
   --font-mono:"SF Mono",ui-monospace,Menlo,Consolas,"Roboto Mono",monospace;
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    color-scheme: dark;
-    --paper:#1B1917;
-    --surface:#231F1D;
-    --surface-2:#2B2624;
-    --surface-3:#332D2A;
-    --ink:#EDE7DE;
-    --ink-2:#B5AA9D;
-    --ink-3:#8B8175;
-    --line:#382F2B;
-    --line-2:#4A3F3A;
-    --red:#E08078;
-    --red-d:#F2ACA4;
-    --red-l:#3A2422;
-    --gold:#D2AC72;
-    --leaf:#9DBE6C;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.35);
-  }
 }
 html[data-fs="s"]{--fs:15px}
 html[data-fs="l"]{--fs:18.5px}
@@ -63,10 +48,18 @@ body{
   font-family:var(--font-sans);font-size:1rem;line-height:1.75;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
+/* 全局光晕：石榴红在上，金在侧，呼应作品里"夜色中的榴光" */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(1100px 520px at 88% -8%, rgba(201,63,43,.11), transparent 62%),
+    radial-gradient(900px 560px at -12% 22%, rgba(210,172,114,.07), transparent 58%),
+    radial-gradient(1500px 900px at 50% 122%, rgba(163,45,45,.07), transparent 60%);
+}
 img,svg{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;cursor:pointer}
-::selection{background:var(--red-l);color:var(--red-d)}
+::selection{background:var(--red);color:#1A110C}
 
 /* ---------- 3. typography ---------- */
 h1,h2,h3,h4{font-family:var(--font-serif);font-weight:600;line-height:1.35;letter-spacing:.01em;margin:0}
@@ -146,7 +139,21 @@ p{margin:0 0 1em}
 @media (max-width:760px){.navsearch,.navout{display:none}}
 
 /* ---------- 6. hero ---------- */
-.hero{padding:4.5rem 0 3rem;position:relative}
+.hero{padding:4.5rem 0 3rem;position:relative;isolation:isolate}
+/* 顶部图片底：暗金线描石榴枝（与作品同源色），向下渐隐融入黑棕底 */
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:url("../img/hero-bg.jpg");
+  background-size:cover;background-position:center 30%;background-repeat:no-repeat;
+  opacity:.85;
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,1) 0%,rgba(0,0,0,.72) 46%,rgba(0,0,0,.22) 78%,transparent 100%);
+  mask-image:linear-gradient(180deg,rgba(0,0,0,1) 0%,rgba(0,0,0,.72) 46%,rgba(0,0,0,.22) 78%,transparent 100%);
+}
+/* 手机端：主体在右侧，改为偏右裁切并降低存在感，保文字对比 */
+@media (max-width:760px){
+  .hero::before{background-position:72% top;opacity:.55}
+}
+.hero > .wrap{position:relative;z-index:1}
 .hero .kicker{
   display:inline-block;font-size:.76rem;letter-spacing:.22em;color:var(--gold);
   border:1px solid var(--gold);border-radius:999px;padding:.22rem .8rem;margin-bottom:1.1rem;
@@ -162,8 +169,8 @@ p{margin:0 0 1em}
   transition:border-color .18s, transform .18s;
 }
 .btn:hover{border-color:var(--red);color:var(--red-d)}
-.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
-.btn.primary:hover{background:var(--red-d);border-color:var(--red-d);color:#fff}
+.btn.primary{background:linear-gradient(135deg,#C9493D,#A02C22);border-color:#A02C22;color:#FBEFE4}
+.btn.primary:hover{filter:brightness(1.14)}
 
 /* ---------- 7. cards & grids ---------- */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:1.4rem}
@@ -189,7 +196,7 @@ p{margin:0 0 1em}
   transition:transform .22s ease, border-color .22s, box-shadow .22s;
 }
 .entry::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);opacity:.85}
-.entry:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:var(--shadow)}
+.entry:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:var(--glow)}
 .entry .idx{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-3);letter-spacing:.1em}
 .entry h3{margin:.4rem 0 .1rem;color:var(--red-d)}
 .entry .sub{font-size:.82rem;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem}
@@ -209,7 +216,7 @@ dialog.srcdlg{
   border:1px solid var(--line-2);border-radius:var(--rad);background:var(--surface);color:var(--ink);
   max-width:min(560px,92vw);padding:0;box-shadow:var(--shadow);
 }
-dialog.srcdlg::backdrop{background:rgba(30,24,20,.45);backdrop-filter:blur(3px)}
+dialog.srcdlg::backdrop{background:rgba(10,6,3,.6);backdrop-filter:blur(3px)}
 dialog.srcdlg .dlghead{
   display:flex;align-items:center;justify-content:space-between;gap:1rem;
   padding:1rem 1.25rem;border-bottom:1px solid var(--line);
@@ -253,8 +260,8 @@ dialog.srcdlg a{color:var(--red);border-bottom:1px solid color-mix(in srgb, var(
   padding:1.15rem 1.15rem 1rem;transition:border-color .22s,box-shadow .22s,transform .22s;
 }
 .tlitem:focus-visible{outline:2px solid var(--red);outline-offset:2px}
-.tlitem:hover{border-color:var(--line-2);box-shadow:var(--shadow);transform:translateY(-2px)}
-.tlitem[aria-current="true"]{border-color:var(--red);box-shadow:var(--shadow)}
+.tlitem:hover{border-color:var(--line-2);box-shadow:var(--glow);transform:translateY(-2px)}
+.tlitem[aria-current="true"]{border-color:var(--red);box-shadow:var(--glow)}
 .tlitem .yr{font-family:var(--font-mono);font-size:.9rem;color:var(--red);letter-spacing:.02em;font-weight:600}
 .tlitem h3{font-size:1.02rem;margin:.35rem 0 .45rem}
 .tlitem p{font-size:.85rem;color:var(--ink-2);margin:0;line-height:1.7}
@@ -267,7 +274,7 @@ dialog.srcdlg a{color:var(--red);border-bottom:1px solid color-mix(in srgb, var(
   position:fixed;inset:0;z-index:120;display:none;
 }
 .drawer.open{display:block}
-.drawer .scrim{position:absolute;inset:0;background:rgba(30,24,20,.45);backdrop-filter:blur(3px)}
+.drawer .scrim{position:absolute;inset:0;background:rgba(10,6,3,.6);backdrop-filter:blur(3px)}
 .drawer .panel{
   position:absolute;background:var(--surface);border:1px solid var(--line-2);
   box-shadow:var(--shadow);overflow-y:auto;
@@ -303,7 +310,7 @@ dialog.srcdlg a{color:var(--red);border-bottom:1px solid color-mix(in srgb, var(
 /* ---------- 11. search ---------- */
 .searchbox{position:fixed;inset:0;z-index:140;display:none;padding-top:12vh}
 .searchbox.open{display:block}
-.searchbox .scrim{position:absolute;inset:0;background:rgba(30,24,20,.45);backdrop-filter:blur(3px)}
+.searchbox .scrim{position:absolute;inset:0;background:rgba(10,6,3,.6);backdrop-filter:blur(3px)}
 .searchbox .panel{
   position:relative;margin:0 auto;width:min(620px,92vw);background:var(--surface);
   border:1px solid var(--line-2);border-radius:var(--rad);box-shadow:var(--shadow);
@@ -350,5 +357,6 @@ dialog.srcdlg a{color:var(--red);border-bottom:1px solid color-mix(in srgb, var(
 @media print{
   .topnav,.searchbox,.drawer,.tlnav,.hero .acts{display:none!important}
   body{background:#fff}
+  body::before,.hero::before{display:none!important}
   .reveal{opacity:1!important;transform:none!important}
 }
