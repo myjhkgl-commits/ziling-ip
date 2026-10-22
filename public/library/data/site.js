@@ -10,8 +10,8 @@
    ============================================================ */
 
 export const SITE = {
-  title: '冠世榴韵 · 枣庄石榴文化信息库',
-  short: '冠世榴韵',
+  title: '丹若榴叙 · 枣庄石榴文化信息库',
+  short: '丹若榴叙',
   tagline: '枣庄石榴文化信息可视化 · 信息库',
   en: 'Zaozhuang Pomegranate Culture Information Library',
   nav: [
@@ -29,7 +29,7 @@ export const SITE = {
    将来若并入同域子路径，把 url 换成相对路径即可，其余代码无需改动。 */
 export const SITES = [
   { key: 'ziling', label: '籽灵 IP 官网', desc: 'IP 主站 · 形象与体系', url: 'https://myjhkgl-commits.github.io/ziling-ip/' },
-  { key: 'h5',     label: '扫码交互页',   desc: '《冠世榴韵》H5 · 剥石榴与集章', url: 'https://myjhkgl-commits.github.io/ziling-ip/h5/' },
+  { key: 'h5',     label: '扫码交互页',   desc: '《丹若榴叙》H5 · 剥石榴与集章', url: 'https://myjhkgl-commits.github.io/ziling-ip/h5/' },
 ]
 
 /* 首页核心数字 —— 每一条都对应 SOURCES 里至少一条可查来源 */
